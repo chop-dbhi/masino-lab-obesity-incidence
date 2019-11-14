@@ -1,0 +1,147 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 ##Case Data Transformation\
+#Transform data for SPADE analysis\
+\
+mydata = read.csv('~/EDC_map1.csv')\
+mydata2 = read.csv('~/EDC_map2.csv')\
+mydata3 = read.csv('~/EDC_map3.csv')\
+\
+Clinical_Findings <- setDT(mydata)\
+Clinical_Findings_Full_EDC <- setDT(mydata)\
+Clinical_Findings_Full_EDC_2 = Clinical_Findings_Full_EDC[!Clinical_Findings_Full_EDC$EDC== '',]\
+\
+\
+#Multiple mapping info\
+setDT(mydata2)\
+mydata2[,.N,by=person_id]\
+mydata2[,.N,by=condition_source_concept_id]\
+\
+#Mapped codes info\
+Clinical_Findings[,.N,by=person_id]\
+Clinical_Findings[,.N,by=condition_source_concept_id]\
+Clinical_Findings[,.N,by=condition_concept_name]\
+Clinical_Findings[,.N,by=condition_concept_id]\
+\
+View(Clinical_Findings)\
+write.csv(Clinical_Findings_Full_EDC_2, 'clinical_findings_SPADE.csv')\
+\
+#SPADE Code\
+mydata4 = read.csv('~/clinical_findings_SPADE.csv')\
+View(mydata4)\
+setDT(mydata4)\
+\
+dfnew <- mydata4[,c(2,9,14)]\
+tmp <- dfnew  %>% mutate(EDC2=paste(Timing_Class, EDC, sep="-"))\
+\
+#de-duplicate\
+tmp[duplicated(tmp)]\
+\
+tmp2<- tmp[,c(1,2,4)]\
+tmp2[!duplicated(tmp2), ]\
+tmp3 <- unique(tmp2)\
+colnames(tmp3) <- c("person_id","Timing_Class", "EDC")\
+\
+dfnew <- setDT(tmp3)\
+\
+EC1 <- dfnew %>% \
+  group_by(person_id, Timing_Class) %>% arrange(EDC) %>% summarise(EDCs = paste(EDC, collapse=", "), times = length(EDC)) %>%\
+  arrange(desc(times), EDCs) \
+\
+setDT(EC1)\
+EC1 <- EC1[,c(1,2,4,3)]\
+EC1 <- EC1[with(EC1, order(person_id, Timing_Class)), ]\
+View(EC1)\
+\
+\
+#Export EC1 to CSV; data cleaning to occur in Python\
+write.csv(EC1, 'SPADE_input.csv')\
+\
+##SPADE Analysis\
+##Cases\
+E <- read_baskets("~/Revised_SPADE_input.txt", info = c("sequenceID","eventID","SIZE"))\
+\
+as(E, "data.frame")\
+s1 <- cspade(E, parameter = list(support = 0.01, maxlen=3, maxgap = 1), control = list(verbose = TRUE))\
+summary(s1)\
+as(s1, "data.frame")\
+\
+\
+## the most frequent singles, doubles, and triplets\
+patterns.s1 = data.table(as(s1, 'data.frame'))\
+patterns.s1[order(-support)]\
+setDT(patterns.s1)\
+View(patterns.s1)\
+\
+##Save SPADE output to CSV\
+write.csv(patterns.s1, 'SPADE_output.csv')\
+\
+## output table\
+output <- data.table((read.csv(file="~/SPADE_output.csv")))\
+output = output[order(-support)]\
+output$sequence = as.character(output$sequence)\
+head(output[order(-support)], 20)\
+\
+\
+##Matched Controls Data Transformation for SPADE\
+#SPADE Code\
+spd1 = read.csv('~/EDC_controls3.csv')\
+View(spd1)\
+setDT(spd1)\
+spd1 = spd1[!spd1$EDC== '',]\
+\
+dfnew2 <- spd1[,c(1,8,9)]\
+tmp <- dfnew2  %>% mutate(EDC2=paste(Timing_Class, EDC, sep="-"))\
+\
+#de-duplicate\
+tmp[duplicated(tmp)]\
+\
+tmp2<- tmp[,c(1,2,4)]\
+tmp2[!duplicated(tmp2), ]\
+tmp3 <- unique(tmp2)\
+colnames(tmp3) <- c("person_id","Timing_Class", "EDC")\
+\
+dfnew <- setDT(tmp3)\
+\
+EC1 <- dfnew %>% \
+  group_by(person_id, Timing_Class) %>% arrange(EDC) %>% summarise(EDCs = paste(EDC, collapse=", "), times = length(EDC)) %>%\
+  arrange(desc(times), EDCs) \
+\
+setDT(EC1)\
+EC1 <- EC1[,c(1,2,4,3)]\
+EC1 <- EC1[with(EC1, order(person_id, Timing_Class)), ]\
+View(EC1)\
+\
+\
+#Export EC1 to CSV; data cleaning to occur in Python\
+write.csv(EC1, 'SPADE_input_controls.csv')\
+\
+##Controls\
+C <- read_baskets("~/Revised_SPADE_input_controls.txt", info = c("sequenceID","eventID","SIZE"))\
+\
+as(C, "data.frame")\
+s2 <- cspade(C, parameter = list(support = 0.0001, maxlen=3, maxgap = 1), control = list(verbose = TRUE))\
+summary(s2)\
+as(s2, "data.frame")\
+\
+\
+## the most frequent singles, doubles, and triplets\
+patterns.s2 = data.table(as(s2, 'data.frame'))\
+patterns.s2[order(-support)]\
+setDT(patterns.s2)\
+View(patterns.s2)\
+\
+##Save SPADE output to CSV\
+write.csv(patterns.s2, 'SPADE_output_controls.csv')\
+\
+## output table\
+output <- data.table((read.csv(file="~/SPADE_output_controls.csv")))\
+output = output[order(-support)]\
+output$sequence = as.character(output$sequence)\
+head(output[order(-support)], 20)\
+}

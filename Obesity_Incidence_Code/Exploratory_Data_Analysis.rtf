@@ -1,0 +1,714 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 #Read in dataset\
+total2 = read.csv('~/obese_observations.csv')\
+setDT(total2)\
+total2[,.N,by=person_id]\
+\
+#Rename concept name as condition concept name in the clinical and non-clinical datasets\
+total2<- total2[,c(2,3,4,5,6,7,8,9,10,11,12,13)]\
+\
+#Indicators for EDC mapping\
+mydata = read.csv('~/EDC_map3_cases.csv')\
+setDT(mydata)\
+\
+#Explore walked EDCs\
+walked_edcs<- mydata[,c(5,13)]\
+\
+#Visualizations of EDC/ICD mapping relationships:\
+\
+#Add unique identifier to each observation\
+\
+total2$ID <- seq.int(nrow(total2))\
+obese_nonclinical_con$ID <- seq.int(nrow(obese_nonclinical_con))\
+obese_clinical_con$ID <- seq.int(nrow(obese_clinical_con))\
+mydata$ID <- seq.int(nrow(mydata))\
+\
+#Histogram of inclusivity of EDC codes\
+hist(mydata[, length(unique(ID)), by = EDC]$V1, breaks=50, xlim=c(0,800), main = paste("Distribution Number of Observations that Individual EDC Codes Can Capture"), xlab="Number of EDCs",\
+     ylab = "Number of Observations")\
+\
+#Histogram of how many ICDs the EDC codes can capture(ranked by inclusivity)\
+hist(walked_edcs[, length(unique(condition_source_concept_id)), by = EDC]$V1, breaks=50, xlim=c(0,800), main = paste("Distribution Number of ICD Concepts that Individual EDC Codes Can Capture"), xlab="The number of ICD codes captured by an EDC code",\
+     ylab = "Number of EDC codes")\
+\
+#Line plot of how many ICDs the EDC codes can capture(ranked by inclusivity)\
+sorted_walked_concepts = \
+  walked_edcs[, length(unique(condition_source_concept_id)), by = EDC][order(-V1)]\
+\
+\
+plot(cumsum(sorted_walked_concepts$V1), main = paste("Number of ICD Concepts grouped by EDC codes (ranked by inclusivity)"), xlab="Number of EDC codes (ranked by inclusivity, greatest to least)",\
+     ylab = "Cumulative number of ICD codes captured by an EDC code", type='l')\
+\
+#Observations in total dataset that are captured by ICD codes ranked by inclusivity\
+observation_walked_concepts = \
+  total2[, length(unique(ID)), by = concept_name][order(-V1)]\
+\
+plot(cumsum(observation_walked_concepts$V1), main = paste("Number of Observations grouped by ICD Concepts (ranked by inclusivity)"), xlab="Number of ICD codes (ranked by inclusivity, greatest to least)",\
+     ylab = "Cumulative number of Observations captured by an ICD code", type='l')\
+\
+#Non-clinical observations that are captured by ICD codes ranked by inclusivity\
+NC_observation_walked_concepts = \
+  obese_nonclinical_con[, length(unique(ID)), by = concept_name][order(-V1)]  \
+\
+plot(cumsum(NC_observation_walked_concepts$V1), main = paste("Number of Non-Clinical Observations grouped by ICD Concepts (ranked by inclusivity)"), xlab="Number of ICD codes (ranked by inclusivity, greatest to least)",\
+     ylab = "Cumulative number of Non-Clinical Observations captured by an ICD code", type='l')\
+\
+#Clinical observations that are captured by ICD codes ranked by inclusivity\
+C_observation_walked_concepts = \
+  obese_clinical_con[, length(unique(ID)), by = concept_name][order(-V1)]  \
+\
+plot(cumsum(C_observation_walked_concepts$V1), main = paste("Number of Clinical Observations grouped by ICD Concepts (ranked by inclusivity)"), xlab="Number of ICD codes (ranked by inclusivity, greatest to least)",\
+     ylab = "Cumulative number of Clinical Observations captured by an ICD code", type='l')\
+\
+#Clinical observations that are captured by EDC codes ranked by inclusivity\
+observation_walked_EDC = \
+  mydata[, length(unique(ID)), by = EDC][order(-V1)]  \
+\
+plot(cumsum(observation_walked_EDC$V1), main = paste("Number of Clinical Observations grouped by EDC Concepts (ranked by inclusivity, includes multiple mappings)"), xlab="Number of EDC codes (ranked by inclusivity, greatest to least)",\
+     ylab = "Cumulative number of Clinical Observations captured by at least one EDC code", type='l')\
+axis( at=x,labels=x, las=2)\
+\
+##Use ggplot\
+#Clinical observations that are captured by ICD codes ranked by inclusivity\
+setDT(C_observation_walked_concepts)\
+p <- ggplot(C_observation_walked_concepts, aes(x=1:7241, y=cumsum(V1))) + geom_line() + ggtitle("Number of Clinical Observations grouped by ICD Concepts (ranked by inclusivity)") + labs(y="Cumulative number of Clinical Observations \\ncaptured by an ICD code", x = "Number of ICD codes (ranked by inclusivity, greatest to least)") + theme(text=element_text(family="Times New Roman", size=18)) + scale_y_continuous(labels = comma)+ scale_x_continuous(labels = comma)\
+\
+\
+##Calcuate cumulative proportions/frequencies\
+v <- c(C_observation_walked_concepts$V1)\
+percovN <- 100*cumsum(v)/sum(v)\
+cumFreq = cumsum(v)\
+\
+tot_c_owc <- cbind(C_observation_walked_concepts, percovN, cumFreq)\
+write.csv(tot_c_owc, "icd_walked.csv")\
+\
+#Add points of interest\
+p + geom_vline(xintercept=558, linetype = "longdash") + geom_point(data = filter(tot_c_owc, newcol == 1, aes(qsec, drat)))\
+\
+p + geom_vline(xintercept=558, linetype = "longdash") \
+\
+g<- p  + geom_text(x=7000, y= 285000, label="308,043 clinical \\nobservations were grouped \\nto 7,241 ICD Codes", family = 'Times New Roman', fontface="plain", size=5.5) + annotate("pointrange", x = 558, y = 246504,ymin = 246503, ymax = 246505,\
+                                                                                                                                                                                    colour = "red", size = 0.75)\
+\
+k<- g + annotate("pointrange", x = 1, y = 10887,ymin = 10886, ymax = 10888, colour = "blue", size = 0.5) + annotate("pointrange", x = 7241, y = 308043,ymin = 308042, ymax = 308044, colour = "blue", size = 0.5)\
+\
+k<- k+ geom_segment(aes(x = 558, y = 65000, xend = 558, yend = 308000), linetype = "longdash") + geom_segment(aes(x = 1, y = 10887, xend = 200, yend = 18000), linetype = "longdash")\
+k <- k+ geom_segment(aes(x = 7241, y = 308000, xend = 7241, yend = 300000), linetype = "longdash") + geom_text(x=500, y= 35000, label="The most common \\nICD code, \'93Obesity\'94 \\nwas recorded \\n10,887 times", family = 'Times New Roman', fontface="plain", size=5.5)\
+k <-k+ geom_text(x=1200, y= 230000, label="80% of clinical \\nobservations were \\ngrouped into \\n558 ICD codes", family = 'Times New Roman', fontface="plain", size=5.5) + geom_segment(aes(x = 558, y = 245000, xend = 800, yend = 245000), linetype = "longdash")\
+\
+#Clinical observations that are captured by EDC codes ranked by inclusivity\
+setDT(observation_walked_EDC)\
+v <- c(observation_walked_EDC$V1)\
+percovN <- 100*cumsum(v)/sum(v)\
+cumFreq = cumsum(v)\
+\
+tot_ow_wedc <- cbind(observation_walked_EDC, percovN, cumFreq)\
+write.csv(tot_ow_wedc, "edc_walked.csv")\
+\
+t <- ggplot(observation_walked_EDC, aes(x=1:268, y=cumsum(V1))) + geom_line() + ggtitle("Number of Clinical Observations grouped by EDC Concepts (ranked by inclusivity, includes multiple mappings)") + labs(y="Cumulative number of Clinical Observations \\ncaptured by at least one EDC code", x = "Number of EDC codes (ranked by inclusivity, greatest to least)") + theme(text=element_text(family="Times New Roman", size=14)) + scale_y_continuous(labels = comma)+ scale_x_continuous(labels = comma)\
+t <- t + annotate("pointrange", x = 62, y = 247019,ymin = 247018, ymax = 247020, colour = "red", size = 0.75) + geom_segment(aes(x = 62, y = 65000, xend = 62, yend = 308000), linetype = "longdash") + annotate("pointrange", x = 1, y = 19895,ymin = 19894, ymax = 19896, colour = "blue", size = 0.5) + annotate("pointrange", x = 268, y = 308736,ymin = 308735, ymax = 308737, size = 0.5)\
+t <-t + geom_text(x=90, y= 245000, label="80% of clinical \\nobservations were \\ngrouped into \\n62 EDC codes", family = 'Times New Roman', fontface="plain", size=4) + geom_segment(aes(x = 62, y = 245000, xend = 80, yend = 245000), linetype = "longdash")\
+t <- t + geom_segment(aes(x = 1, y = 19895, xend = 15, yend = 19895), linetype = "longdash") + geom_text(x=25, y= 30000, label="The most common EDC code, \\n\'93Asthma without status asthmaticus\'94 \\nwas recorded \\n19,895 times", family = 'Times New Roman', fontface="plain", size=4)\
+\
+#Line plot of how many ICDs the EDC codes can capture(ranked by inclusivity)\
+v <- c(sorted_walked_concepts$V1)\
+percovN <- 100*cumsum(v)/sum(v)\
+cumFreq = cumsum(v)\
+\
+tot_swc <- cbind(sorted_walked_concepts, percovN, cumFreq)\
+write.csv(tot_swc, "sorted_walked.csv")\
+\
+swc <-ggplot(sorted_walked_concepts, aes(x=1:268, y=cumsum(V1))) + geom_line() + ggtitle("Number of ICD Concepts grouped by EDC codes (ranked by inclusivity); includes multiple mappings") + labs(y="Cumulative number of ICD codes captured by an EDC code", x = "Number of EDC codes (ranked by inclusivity, greatest to least)") + theme(text=element_text(family="Times New Roman", size=18)) + scale_y_continuous(labels = comma)+ scale_x_continuous(labels = comma)\
+swc <-swc + annotate("pointrange", x = 99, y = 6246,ymin = 6247, ymax = 6248, colour = "red", size = 0.75) + geom_segment(aes(x = 99, y = 4000, xend = 99, yend = 8000), linetype = "longdash") + annotate("pointrange", x = 1, y = 525,ymin = 524, ymax = 526, colour = "blue", size = 0.5) + annotate("pointrange", x = 268, y = 7786,ymin = 7785, ymax = 7787, size = 0.5)\
+swc <-swc + geom_text(x=120, y= 4200, label="80% of ICD codes were \\ngrouped into \\n99 EDC codes", family = 'Times New Roman', fontface="plain", size=5.5) + geom_segment(aes(x = 99, y = 4000, xend = 108, yend = 4000), linetype = "longdash")\
+swc <-swc + geom_segment(aes(x = 1, y = 525, xend = 10, yend = 525), linetype = "longdash") + geom_text(x=25, y= 1000, label="The EDC code, \\nFractures (excluding digits) \\nrepresented 525 ICD codes", family = 'Times New Roman', fontface="plain", size=5.5)\
+\
+#EDA:\
+\
+#Time Difference Data\
+#Rename Columns in PrePostDiffDT\
+colnames(PrePostDiffDT) <- c("person_id", "visit_date", "V1", "Timing_Class")\
+\
+#Use KDE to study time differences\
+library(scales)\
+colnames(PrePostDiffDT) <- c("person_id","visit_date", "V1", "Timing_Class")\
+\
+pre1 <- PrePostDiffDT[Timing_Class == 1]\
+pre2 <- PrePostDiffDT[Timing_Class == 3]\
+pre1 <- pre1[,c(1,2,3,4)]\
+pre2 <- pre2[,c(1,2,3,4)]\
+pre1$Visit_Timing<-"Pre-Index"\
+pre2$Visit_Timing<-"Post-Index"\
+pre1[, Visit_Timing := as.factor(Visit_Timing)]\
+pre2[, Visit_Timing := as.factor(Visit_Timing)]\
+setDT(pre1)\
+setDT(pre2)\
+x <- rbind(pre1,pre2)\
+\
+PrePostDiffDT <- setDT(x)\
+PrePostDiffDT[, V1 := as.numeric(V1)]\
+gg <-ggplot(unique(PrePostDiffDT), \
+            aes(x= log2(V1), fill=Visit_Timing, group=Visit_Timing, alpha = 0.9)) + \
+  theme_bw() + \
+  geom_density() + scale_fill_brewer() + guides(alpha = FALSE) + \
+  labs(x= "Time Difference in Days (log2 scale)", \
+       y= "Visit Count",\
+       title= "Kernal Density Estimate of Time Differences between visit date and obesity diagnosis" ) + theme(text=element_text(family="Times New Roman", size=14))\
+\
+gg <-gg + geom_segment(aes(x = 5.64, y = 0.2, xend = 5.64, yend = 0.1), linetype = "longdash") + geom_segment(aes(x = 8.51, y = 0.25, xend = 8.51, yend = 0.1), linetype = "longdash")\
+gg <-gg + annotate("pointrange", x = 5.64, y = 0.173,ymin = 0.172, ymax = 0.174, size = 0.3) + annotate("pointrange", x = 5.64, y = 0.137,ymin = 0.136, ymax = 0.138, size = 0.3)\
+gg <-gg + annotate("pointrange", x = 8.51, y = 0.178,ymin = 0.177, ymax = 0.179, size = 0.3) + annotate("pointrange", x = 8.51, y = 0.220,ymin = 0.219, ymax = 0.221, size = 0.3)\
+gg <-gg + geom_segment(aes(x = 5.64, y = 0.2, xend = 5.9, yend = 0.2), linetype = "longdash") + geom_segment(aes(x = 8.51, y = 0.25, xend = 8.77, yend = 0.25), linetype = "longdash")\
+gg <-gg + geom_text(x=6.25, y= 0.2, label="50 Days", family = 'Times New Roman', fontface="plain", size=4)\
+gg <-gg + geom_text(x=9.25, y= 0.25, label="365 Days", family = 'Times New Roman', fontface="plain", size=4) \
+gg + guides(fill=guide_legend(title="Visit Timing"))\
+\
+#Data frames with combined clinical/non-clinical observations by timing class\
+\
+Pre_index_tot <- subset(total2, Timing_Class== '1', select=c(person_id, min_obese_date, visit_date,condition_concept_id,visit_occurrence_id, condition_concept_name, condition_source_concept_id, Timing_Class, V1))\
+Post_index_tot <- subset(total2, Timing_Class== '3', select=c(person_id, min_obese_date, visit_date,condition_concept_id,visit_occurrence_id,condition_concept_name, condition_source_concept_id, Timing_Class, V1))\
+Index_tot <- subset(total2, Timing_Class== '2', select=c(person_id, min_obese_date, visit_date,condition_concept_id, visit_occurrence_id,condition_concept_name, condition_source_concept_id, Timing_Class, V1))\
+PrePost <- rbind(Pre_index_tot, Post_index_tot)\
+\
+#Make data frames \
+setDT(total2)\
+setDT(Pre_index_tot)\
+setDT(Post_index_tot)\
+setDT(Index_tot)\
+setDT(PrePost)\
+\
+#Summary statstics\
+\
+summary(unique(Pre_index_tot))    \
+summary(unique(Post_index_tot))\
+summary(unique(Index_tot))\
+summary(total2)\
+\
+\
+#Distribution of observations by timing class\
+\
+prop.table(table(total2$Timing_Class))\
+\
+#Data frames with combined clinical/non-clinical observations by timing class\
+\
+Pre_index_tot <- subset(total2, Timing_Class== '1', select=c(person_id, min_obese_date, visit_date,condition_concept_id, condition_concept_id, condition_source_concept_id, concept_name, visit_occurrence_id, Timing_Class, V1))\
+Post_index_tot <- subset(total2, Timing_Class== '3', select=c(person_id, min_obese_date, visit_date,condition_concept_id, condition_concept_id, condition_source_concept_id, concept_name, visit_occurrence_id, Timing_Class, V1))\
+Index_tot <- subset(total2, Timing_Class== '2', select=c(person_id, min_obese_date, visit_date,condition_concept_id, condition_concept_id, condition_source_concept_id, concept_name, visit_occurrence_id, Timing_Class, V1))\
+PrePost <- rbind(Pre_index_tot, Post_index_tot)\
+\
+#Make data frames \
+setDT(total2)\
+setDT(Pre_index_tot)\
+setDT(Post_index_tot)\
+setDT(Index_tot)\
+setDT(PrePost)\
+\
+#Summary statstics\
+\
+summary(unique(Pre_index_tot))    \
+summary(unique(Post_index_tot))\
+summary(unique(Index_tot))\
+summary(total2)\
+\
+\
+#Distribution of observations by timing class\
+\
+prop.table(table(total2$Timing_Class))\
+total2[,.N,by=Timing_Class]\
+\
+#What are the average differences in time between first obesity diagnosis and the visits that occurred before and after? \
+#Are there differences in this time difference by timing classification (pre-diagnosis versus post)?\
+\
+#Explore Pre and Post Obesity Diagnosis Time Difference \
+un_pre_diff <- unique(Pre_index_tot)\
+Pre_Time_Diff <-un_pre_diff$V1\
+mean(Pre_Time_Diff)\
+median(Pre_Time_Diff)\
+sd(Pre_Time_Diff)\
+\
+un_post_diff <- unique(Post_index_tot)\
+Post_Time_Diff <-un_post_diff$V1\
+mean(Post_Time_Diff)\
+median(Post_Time_Diff)\
+sd(Post_Time_Diff)\
+\
+\
+## Get frequency counts of patients who\
+## 1) have only pre visits\
+## 2) only post visits\
+## 3) both\
+## 4) neither\
+\
+timingGroups2 = total2[, .('1' %in% Timing_Class, '2' %in% Timing_Class, '3' %in% Timing_Class), by = person_id]\
+setnames(timingGroups2, c('V1', 'V2', 'V3'), c('has.pre', 'has.during', 'has.post'))\
+\
+timingGroups2[,.N,by=person_id]\
+\
+timingGroups2[ has.pre + has.during == 2 & has.post == 0]\
+timingGroups2[ has.post + has.during == 2 & has.pre == 0]\
+timingGroups2[ has.post + has.during + has.pre == 3]\
+timingGroups2[ has.post + has.during + has.pre == 1]\
+\
+#Post-index visit proportion calculation\
+#Has Post-index Visit\
+33579/49694\
+\
+#Does not have Post-index Visit\
+16115/49694\
+\
+#make demographic table\
+personID <- subset(total2, select=c(unique(person_id)))\
+person_data = unique(person_data)\
+a <- data.table(person_data)\
+setkey(a,person_id)\
+b <- data.table(personID)\
+setkey(b,person_id)\
+b[, person_id := as.factor(person_id)]\
+a[, person_id := as.factor(person_id)]\
+\
+person_table <- a[person_id %in% b$person_id]\
+summary(person_table)\
+as.data.frame(person_table)\
+\
+#gender\
+prop.table(table(person_table$gender_concept_id))\
+person_table[,.N,by=gender_concept_id]\
+\
+#race\
+prop.table(table(person_table$race_concept_id))\
+person_table[,.N,by=race_concept_id]\
+\
+#ethnicity\
+prop.table(table(person_table$ethnicity_concept_id))\
+person_table[,.N,by=ethnicity_concept_id]\
+\
+#make insurance table\
+\
+index_VO <- subset(Index_tot, select=c(unique(visit_occurrence_id), visit_date, unique(person_id)))\
+insurance_table2 <- insurance[visit_occurrence_id %in% Index_tot$visit_occurrence_id]\
+insurance_table3 <- subset(insurance_table2, select=c(unique(visit_occurrence_id), unique(plan_class)))\
+insurance_table3 = unique(insurance_table3)\
+prop.table(table(insurance_table3$plan_class))\
+insurance_table3[,.N,by=(plan_class=='Medicaid/sCHIP')]\
+insurance_table3[,.N,by=(plan_class=='Medicare')]\
+insurance_table3[,.N,by=(plan_class=='Private/Commercial')]\
+insurance_table3[,.N,by=(plan_class=='Self-pay')]\
+\
+#Get unique person-level insurance info\
+setkey(insurance_table2, "visit_occurrence_id")\
+setkey(index_VO, "visit_occurrence_id")\
+\
+z  = insurance[index_VO]\
+z2 <- z[,c(5,3)]\
+\
+z3 <-z2[!duplicated(z2), ]\
+setDT(z3)\
+z3[,.N,by=person_id]\
+\
+z4= z3[!z3$plan_class=='NA',]\
+z4[,.N,by=person_id]\
+\
+##Multiple plan types\
+z4[, num_entries := seq(1, nrow(.SD)) - 1, by = person_id]\
+z5 <- subset(z4, num_entries== '1', select=c(person_id, plan_class, num_entries))\
+\
+#Proportion:\
+840/49694\
+\
+#Complete and Single Insurance Plan Info\
+z6 <-z4[!(person_id %in% z5$person_id)]\
+\
+\
+prop.table(table(z6$plan_class))\
+\
+z6[,.N,by=(plan_class=='Medicaid/sCHIP')]\
+z6[,.N,by=(plan_class=='Medicare')]\
+z6[,.N,by=(plan_class=='Private/Commercial')]\
+z6[,.N,by=(plan_class=='Self-pay')]\
+\
+#No Information\
+49694-48677\
+1017/49694\
+\
+#Proportion of plan class for total population\
+#Medicaid\
+19178/49694\
+\
+#Private\
+28393/49694\
+\
+#make age table\
+index_age <- subset(Index_tot, select=c(unique(person_id), visit_date))\
+c <- data.table(index_age)\
+c[, person_id := as.factor(person_id)]\
+setkey(c,person_id)\
+c[,.N,by=person_id]\
+\
+birthday <- subset(person_data, select=c(unique(person_id), birthday))\
+\
+\
+d <- a[person_id %in% c$person_id]\
+index_age <- unique(index_age)\
+setkey(d,person_id)\
+setkey(index_age,person_id)\
+d2 <- cbind(d, index_age)\
+d3 <- d2[,c(1,5,7)]\
+\
+\
+d3$diff_in_days<- difftime(d3$visit_date, d3$birthday, units = c("days"))\
+\
+age_1 <- subset(d3,diff_in_days < (365*5), \
+                select=c(person_id, birthday, visit_date,diff_in_days))\
+age_2 <- subset(d3, diff_in_days>=(365*5) & diff_in_days <(365*12), \
+                select=c(person_id, birthday, visit_date,diff_in_days))\
+\
+age_3 <- subset(d3, diff_in_days>=(365*12), \
+                select=c(person_id, birthday, visit_date,diff_in_days))\
+\
+\
+age_3$Cat = '3'\
+age_1$Cat = '1'\
+age_2$Cat= '2'\
+\
+age_tot <- rbind(age_1, age_2, age_3)\
+prop.table(table(age_tot$Cat))\
+\
+\
+#Create time difference groups from clinical observations\
+#Note that I renamed the condition concept name here\
+Pre_index_clin <- subset(obese_clinical_con, Timing_Class== '1', select=c(person_id, min_obese_date, visit_date,condition_concept_id,concept_name, condition_source_concept_id, Timing_Class, V1))\
+Post_index_clin <- subset(obese_clinical_con, Timing_Class== '3', select=c(person_id, min_obese_date, visit_date,condition_concept_id,concept_name, condition_source_concept_id, Timing_Class, V1))\
+PrePostClin <- rbind(Pre_index_clin, Post_index_clin)\
+\
+\
+time_diff_1 <- subset(PrePostClin, V1 <=180, \
+                      select=c(person_id, min_obese_date, visit_date,condition_concept_id,concept_name, condition_source_concept_id, Timing_Class, V1))\
+\
+time_diff_2 <- subset(PrePostClin, V1 >180 & V1 <=365, \
+                      select=c(person_id, min_obese_date, visit_date,condition_concept_id,concept_name, condition_source_concept_id, Timing_Class, V1))\
+\
+\
+time_diff_3 <- subset(PrePostClin, V1 >365, \
+                      select=c(person_id, min_obese_date, visit_date,condition_concept_id,concept_name, condition_source_concept_id, Timing_Class, V1))\
+\
+setDT(time_diff_1)\
+setDT(time_diff_2)\
+setDT(time_diff_3)\
+\
+\
+time_diff_3$Cat = '3'\
+time_diff_1$Cat = '1'\
+time_diff_2$Cat= '2'\
+\
+\
+time_diff_tot <- rbind(time_diff_1, time_diff_2, time_diff_3)\
+prop.table(table(time_diff_tot$Cat))\
+time_diff_tot[,.N,by=(Cat=='1')]\
+time_diff_tot[,.N,by=(Cat=='2')]\
+time_diff_tot[,.N,by=(Cat=='3')]\
+\
+##Read in newly matched controls\
+\
+mapped_controls = read.csv('~/EDC_controls3.csv')\
+setDT(mapped_controls)\
+\
+##Eliminate non-clinical conditions\
+mapped_controls2 <- mapped_controls[condition_concept_id %in% snomed_codes$concept_id]\
+View(mapped_controls2)\
+\
+mapped_controls[,.N,by=person_id]\
+mapped_controls2[,.N,by=person_id]\
+\
+##Matched controls demographics for pair identification with the cases\
+control_info <- subset(mapped_controls2, Timing_Class== '2', select=c(person_id, num_of_prior_visits, index_age ))\
+control_info <- control_info[!duplicated(control_info), ]\
+setDT(control_info)\
+setkey(control_info, person_id)\
+setkey(person_data, person_id)\
+control_info[, person_id := as.factor(person_id)]\
+person_data[, person_id := as.factor(person_id)]\
+control_person_table <- person_data[person_id %in% control_info$person_id]\
+setDT(control_person_table)\
+\
+control_gender <- control_person_table[,c(1,2)]\
+setDT(control_gender)\
+setkey(control_gender, person_id)\
+\
+control_match_info= cbind(control_gender, control_info)\
+setDT(control_match_info)\
+control_match_info <- control_match_info[,c(1,2,4,5)]\
+control_match_info <- control_match_info[,c(1,2,4,3)]\
+colnames(control_match_info) <- c("person_id","gender", "index_age", "num_of_prior_visits")\
+control_match_info$casecont = 'cont'\
+\
+#Read in cases\
+case_pop = read.csv('~/case_population.csv')\
+setDT(case_pop)\
+case_pop <- case_pop[,c(2,3,4,5,6)]\
+\
+#Separate by gender\
+case_pop_m  = case_pop[!case_pop$gender== 8532,]\
+case_pop_f = case_pop[!case_pop$gender== 8507,]\
+control_pop_m= control_match_info[!control_match_info$gender== 8532,]\
+control_pop_f= control_match_info[!control_match_info$gender== 8507,]\
+setDT(case_pop_m)\
+setDT(case_pop_f)\
+setDT(control_pop_m)\
+setDT(control_pop_f)\
+\
+#Match males\
+full_data_m <- rbind(case_pop_m, control_pop_m)\
+setDT(full_data_m)\
+full_match_m <- matchControls(casecont ~ index_age + num_of_prior_visits, full_data_m, contlabel = "cont", caselabel = "case", replace = FALSE)\
+y <- as.data.table(full_match_m)\
+\
+full_data_m$ID <- seq.int(nrow(full_data_m))\
+y[, factor := as.factor(factor)]\
+full_data_m[, factor := as.factor(casecont)]\
+y2 <- subset(y, factor=="case",\
+             select=cases:factor)\
+y3 <- subset(y, factor=="cont",\
+             select=cases:factor)\
+\
+setDT(y2)\
+setDT(y3)\
+\
+colnames(y2) <- c("ID", "Control ID", "casecont")\
+cases_m <- subset(full_data_m, casecont=="case",\
+                  select=person_id:ID)\
+\
+setDT(cases_m)\
+\
+setkeyv(cases_m, c("ID","casecont"))\
+setkeyv(y2, c("ID","casecont"))\
+\
+cases_m[, ID := as.numeric(ID)]\
+y2[, ID := as.numeric(ID)]\
+x  = y2[cases_m]\
+\
+colnames(y3) <- c("Case ID", "ID", "casecont")\
+controls_m <- subset(full_data_m, casecont=="cont",\
+                     select=person_id:ID)\
+\
+setDT(controls_m)\
+\
+setkeyv(controls_m, c("ID","casecont"))\
+setkeyv(y3, c("ID","casecont"))\
+\
+controls_m[, ID := as.numeric(ID)]\
+y3[, ID := as.numeric(ID)]\
+x2  = y3[controls_m]\
+\
+write.csv(x, "match_males1.csv")\
+write.csv(x2, "match_males2.csv")\
+\
+ID_data <- full_data_m[,c(1,5,6)]\
+matched_pairs <- x[,c(1,2)]\
+colnames(matched_pairs) <- c("Case ID", "Control_ID")\
+setDT(matched_pairs)\
+cases_m2 <- cases_m[,c(1,2,3,4,5,6)]\
+colnames(cases_m2) <- c("person_id", "gender", "index_age", "num_of_prior_visits", "casecont", "Case ID")\
+setDT(cases_m2)\
+\
+setkey(cases_m2, "Case ID")\
+setkey(matched_pairs, "Case ID")\
+\
+x3  = matched_pairs[cases_m2]\
+x4 <- x3[,c(1,3,2)]\
+colnames(x4) <- c("Case ID", "Case person_id", "Control ID")\
+setDT(x4)\
+\
+\
+controls_m2 <- controls_m[,c(1,2,3,4,5,6)]\
+colnames(controls_m2) <- c("person_id", "gender", "index_age", "num_of_prior_visits", "casecont", "Control_ID")\
+setDT(controls_m2)\
+\
+controls_m2[, Control_ID := as.factor(Control_ID)]\
+matched_pairs[, Control_ID := as.factor(Control_ID)]\
+\
+setkey(controls_m2, "Control_ID")\
+setkey(matched_pairs, "Control_ID")\
+\
+x5  = matched_pairs[controls_m2]\
+x6 <- x5[,c(2,3,1)]\
+colnames(x6) <- c("Control ID", "Control person_id", "Case ID")\
+setDT(x6)\
+\
+\
+setkey(x4, "Case ID")\
+setkey(x6, "Case ID")\
+\
+x7  = x4[x6]\
+final_male_pairs <- x7[,c(1,2,3,5)]\
+setDT(final_male_pairs)\
+write.csv(final_male_pairs, "final_male_pairs.csv")\
+\
+#Match females\
+full_data_f <- rbind(case_pop_f, control_pop_f)\
+setDT(full_data_f)\
+full_match_f <- matchControls(casecont ~ index_age + num_of_prior_visits, full_data_f, contlabel = "cont", caselabel = "case", replace = FALSE)\
+\
+t <- as.data.table(full_match_f)\
+\
+full_data_f$ID <- seq.int(nrow(full_data_f))\
+t[, factor := as.factor(factor)]\
+full_data_f[, factor := as.factor(casecont)]\
+t2 <- subset(t, factor=="case",\
+             select=cases:factor)\
+t3 <- subset(t, factor=="cont",\
+             select=cases:factor)\
+\
+setDT(t2)\
+setDT(t3)\
+\
+colnames(t2) <- c("ID", "Control ID", "casecont")\
+cases_f <- subset(full_data_f, casecont=="case",\
+                  select=person_id:ID)\
+\
+setDT(cases_f)\
+cases_f[, ID := as.numeric(ID)]\
+t2[, ID := as.numeric(ID)]\
+setkeyv(cases_f, c("ID","casecont"))\
+setkeyv(t2, c("ID","casecont"))\
+\
+\
+f  = t2[cases_f]\
+\
+colnames(t3) <- c("Case ID", "ID", "casecont")\
+controls_f <- subset(full_data_f, casecont=="cont",\
+                     select=person_id:ID)\
+\
+setDT(controls_f)\
+controls_f[, ID := as.numeric(ID)]\
+t3[, ID := as.numeric(ID)]\
+setkeyv(controls_f, c("ID","casecont"))\
+setkeyv(t3, c("ID","casecont"))\
+\
+\
+f2  = t3[controls_f]\
+\
+write.csv(f, "match_females1.csv")\
+write.csv(f2, "match_females2.csv")\
+\
+ID_data_f <- full_data_f[,c(1,5,6)]\
+matched_pairs_f <- f[,c(1,2)]\
+colnames(matched_pairs_f) <- c("Case ID", "Control_ID")\
+setDT(matched_pairs_f)\
+cases_f2 <- cases_f[,c(1,2,3,4,5,6)]\
+colnames(cases_f2) <- c("person_id", "gender", "index_age", "num_of_prior_visits", "casecont", "Case ID")\
+setDT(cases_f2)\
+\
+setkey(cases_f2, "Case ID")\
+setkey(matched_pairs_f, "Case ID")\
+\
+f3  = matched_pairs_f[cases_f2]\
+f4 <- f3[,c(1,3,2)]\
+colnames(f4) <- c("Case ID", "Case person_id", "Control ID")\
+setDT(f4)\
+\
+\
+controls_f2 <- controls_f[,c(1,2,3,4,5,6)]\
+colnames(controls_f2) <- c("person_id", "gender", "index_age", "num_of_prior_visits", "casecont", "Control_ID")\
+setDT(controls_f2)\
+\
+controls_f2[, Control_ID := as.factor(Control_ID)]\
+matched_pairs_f[, Control_ID := as.factor(Control_ID)]\
+\
+setkey(controls_f2, "Control_ID")\
+setkey(matched_pairs_f, "Control_ID")\
+\
+f5  = matched_pairs_f[controls_f2]\
+f6 <- f5[,c(2,3,1)]\
+colnames(f6) <- c("Control ID", "Control person_id", "Case ID")\
+setDT(f6)\
+\
+\
+setkey(f4, "Case ID")\
+setkey(f6, "Case ID")\
+\
+f7  = f4[f6]\
+final_female_pairs <- f7[,c(1,2,3,5)]\
+setDT(final_female_pairs)\
+write.csv(final_female_pairs, "final_female_pairs.csv")\
+\
+final_pairs_total <- rbind(final_male_pairs, final_female_pairs)\
+write.csv(final_pairs_total, "final_pairs_total.csv")\
+final_pairs_IDs <- final_pairs_total[,c(2,4)]\
+setDT(final_pairs_IDs)\
+final_pairs_IDs$Pair_ID <- seq.int(nrow(final_pairs_IDs))\
+write.csv(final_pairs_IDs, "final_pairs_IDs.csv")\
+\
+#Study matched control demographics for comparison\
+##Matched controls info\
+control_dem <- subset(mapped_controls2, Timing_Class== '2', select=c(person_id, num_of_prior_visits, index_age, Timing_Class ))\
+control_dem <- control_dem[!duplicated(control_dem), ]\
+control_dem[,.N,by=person_id]\
+control_dem[, count_num := seq(1, nrow(.SD)) - 1, by = person_id]\
+\
+control_dem_pre <- subset(matches_final_cont, Timing_Class== '1', select=c(person_id, num_of_prior_visits, index_age, Timing_Class ))\
+control_dem_pre <- control_dem_pre[!duplicated(control_dem_pre), ]\
+control_dem_pre[,.N,by=person_id]\
+control_dem_pre[, count_num := seq(1, nrow(.SD)) - 1, by = person_id]\
+\
+\
+control_dem_post <- subset(matches_final_cont, Timing_Class== '3', select=c(person_id, num_of_prior_visits, index_age, Timing_Class ))\
+control_dem_post <- control_dem_post[!duplicated(control_dem_post), ]\
+control_dem_post[,.N,by=person_id]\
+control_dem_post[, count_num := seq(1, nrow(.SD)) - 1, by = person_id]\
+\
+control_dem <- control_dem[,c(1,2,3,4)]\
+control_dem$casecont = 'cont'\
+\
+##I need gender info\
+setDT(control_dem)\
+setkey(control_dem, "person_id")\
+setkey(matches_gender, "person_id")\
+control_dem2 = matches_gender[control_dem]\
+control_dem2 <- control_dem2[, gender := as.factor(gender_concept_id)]\
+control_dem2 <- control_dem2[,c(1,7,4,3,6)]\
+\
+control_dem2$Legend = 'Controls'\
+case_pop$Legend = 'Cases'\
+\
+write.csv(control_dem2, "index_matched_controls.csv")\
+control_dem2 = read.csv('~/index_matched_controls.csv')\
+setDT(control_dem2)\
+control_dem2 <- control_dem2[,c(2,3,4,5,6)]\
+control_dem <- setDT(control_dem2)\
+matches_dem <- rbind(control_dem2, case_pop)\
+setDT(matches_dem)\
+\
+##Side by side histograms\
+\
+##Define Space for X/Y scales\
+space <- function(x, ...) \{ \
+  format(x, ..., big.mark = " ", scientific = FALSE, trim = TRUE)\
+\}\
+\
+p= ggplot(matches_dem, aes(index_age, fill = casecont)) + geom_histogram(alpha = 1.0, bins= 40,  position = 'dodge') + labs(x= "Distribution of Age at Index Visit in Days",\
+                                                                                                                            y= "Patient Count") + theme(text=element_text(family="Times New Roman", size=18))\
+p <- p + scale_fill_manual(values=c("black", "gray")) + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +  scale_y_continuous(labels = space)  +  scale_x_continuous(labels = space)\
+\
+p <-p + theme(text=element_text(family="Times New Roman", size=18)) + scale_fill_manual(values=c("#999999", "#000000"), \
+                                                                                        name="Population \\nCategory",\
+                                                                                        breaks=c("case", "cont"),\
+                                                                                        labels=c("Cases", "Controls"))\
+#binwidth = 0.6\
+pv <- ggplot(matches_dem, aes(num_of_prior_visits, fill = casecont)) + geom_histogram(alpha = 1.0, bins=40,  position = 'dodge') + scale_x_continuous("Number of Cumulative Prior Visits before Index Visit", limits=c(0,200), breaks=c(0,50,100,150,200)) + labs(x= "Number of Cumulative Prior Visits before Index Visit",\
+                                                                                                                                                                                                                                                                  y= "Patient Count") + theme_bw()+ theme(text=element_text(family="Times New Roman", size=18))\
+\
+\
+\
+pv <-   pv + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +  scale_y_continuous(labels = space)  +  scale_x_continuous(labels = space)                                                                                                                                                                                                                                                                \
+\
+pv <-pv + theme(text=element_text(family="Times New Roman", size=18)) + scale_fill_manual(values=c("#999999", "#000000"), \
+                                                                                          name="Population \\nCategory",\
+                                                                                          breaks=c("case", "cont"),\
+                                                                                          labels=c("Cases", "Controls"))\
+}

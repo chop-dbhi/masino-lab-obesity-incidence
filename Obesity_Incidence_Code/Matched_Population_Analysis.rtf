@@ -1,0 +1,306 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 library(ggplot2) # Data visualization\
+library(MASS) # Dataset package\
+library(dplyr) # For data manipulation/wrangling\
+\
+control_dem = read.csv('~/index_matched_controls.csv')\
+setDT(control_dem)\
+\
+case_pop = read.csv('~/case_population.csv')\
+setDT(case_pop)\
+\
+control_dem <- control_dem[,c(2,3,4,5,6)]\
+case_pop <- case_pop[,c(2,3,4,5,6)]\
+\
+control_dem$Legend = 'Controls'\
+case_pop$Legend = 'Cases'\
+\
+\
+##Create categorical variables for Index age and Number of Prior Visits\
+#Index Age\
+#Controls\
+control_dem$age_cat= '.'\
+control_dem[, index_age := as.numeric(index_age)]\
+attach(control_dem)\
+control_dem$age_cat[index_age > 0 & index_age <=1730] <- "0729-1730"\
+control_dem$age_cat[index_age > 1730 & index_age <=2730] <- "1731-2730"\
+control_dem$age_cat[index_age > 2730 & index_age <=3730] <- "2731-3730"\
+control_dem$age_cat[index_age > 3730 & index_age <=4730] <- "3731-4730"\
+control_dem$age_cat[index_age > 4730 & index_age <=5730] <- "4731-5730"\
+control_dem$age_cat[index_age > 5730 & index_age <=6570] <- "5731-6570"\
+detach(control_dem)\
+\
+#Cases\
+case_pop$age_cat= '.'\
+case_pop[, index_age := as.numeric(index_age)]\
+attach(case_pop)\
+case_pop$age_cat[index_age > 0 & index_age <=1730] <- "0729-1730"\
+case_pop$age_cat[index_age > 1730 & index_age <=2730] <- "1731-2730"\
+case_pop$age_cat[index_age > 2730 & index_age <=3730] <- "2731-3730"\
+case_pop$age_cat[index_age > 3730 & index_age <=4730] <- "3731-4730"\
+case_pop$age_cat[index_age > 4730 & index_age <=5730] <- "4731-5730"\
+case_pop$age_cat[index_age > 5730 & index_age <=6570] <- "5731-6570"\
+detach(case_pop)\
+\
+#Number of Prior Visits\
+#Controls\
+control_dem$visit_cat= '.'\
+control_dem[, num_of_prior_visits := as.numeric(num_of_prior_visits)]\
+attach(control_dem)\
+control_dem$visit_cat[num_of_prior_visits > 0 & num_of_prior_visits <=25] <- "1-25"\
+control_dem$visit_cat[num_of_prior_visits > 25 & num_of_prior_visits <=50] <- "26-50"\
+control_dem$visit_cat[num_of_prior_visits > 50 & num_of_prior_visits <=75] <- "51-75"\
+control_dem$visit_cat[num_of_prior_visits > 75] <- "Above 75"\
+detach(control_dem)\
+\
+#Cases\
+case_pop$visit_cat= '.'\
+case_pop[, num_of_prior_visits := as.numeric(num_of_prior_visits)]\
+attach(case_pop)\
+case_pop$visit_cat[num_of_prior_visits > 0 & num_of_prior_visits <=25] <- "1-25"\
+case_pop$visit_cat[num_of_prior_visits > 25 & num_of_prior_visits <=50] <- "26-50"\
+case_pop$visit_cat[num_of_prior_visits > 50 & num_of_prior_visits <=75] <- "51-75"\
+case_pop$visit_cat[num_of_prior_visits > 75] <- "Above 75"\
+detach(case_pop)\
+\
+matches_dem <- rbind(control_dem, case_pop)\
+setDT(matches_dem)\
+\
+##Create side-by-side bar plots\
+#Prior Visits, option 1\
+\
+matches_pv <- matches_dem %>% group_by(Legend, visit_cat) %>% summarize(Count= n())\
+matches_pv\
+\
+space <- function(y, ...) \{ \
+  format(y, ..., big.mark = " ", scientific = FALSE, trim = TRUE)\
+\}\
+\
+e<- ggplot(data=matches_pv, aes(x= Legend, y=Count, fill= visit_cat)) + geom_bar(stat="identity", position= position_dodge(), alpha= 0.75) + labs(x= "Population", y = "Patient Count", title= "Comparison of Visit Count Prior to Matched Index Visit for Case and Control Populations", fill= "visit_cat")\
+e<- e + theme(text=element_text(family="Times New Roman", size=24))\
+e<- e + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) \
+e<- e + theme(text=element_text(family="Times New Roman", size=24)) + scale_fill_manual(values=c("black", "gray50", "gray80", "white")\
+                                                                                    , name="Visit Count \\nCategory")\
+\
+e<-e + scale_y_continuous(labels = space)\
+# e + scale_fill_grey(start=0.8, end=0.2) + theme_classic()\
+\
+e<-e +  geom_bar(data=matches_pv, position=position_dodge(.9), stat="identity", colour="black",size=0.5)\
+\
+\
+##Prior visits option 2 (final)\
+g<- ggplot(data=matches_pv, aes(x= visit_cat, y=Count, fill= Legend)) + geom_bar(stat="identity", position= position_dodge(), alpha= 0.75) + labs(x= "Visit Count Category", y = "Patient Count", title= "Comparison of Visit Count Prior to Matched Index Visit for Case and Control Populations", fill= "Legend")\
+g<- g + theme(text=element_text(family="Times New Roman", size=24))\
+g<- g + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) \
+g<- g + theme(text=element_text(family="Times New Roman", size=24)) + scale_fill_manual(values=c("black", "white")\
+                                                                                        , name="Legend")\
+\
+g<-g + scale_y_continuous(labels = space)\
+g<-g +  geom_bar(data=matches_pv, position=position_dodge(.9), stat="identity", colour="black",size=0.5)\
+g + scale_x_discrete(breaks=c("1-25", "26-50", "51-75", "Above 75"),\
+                   labels=c("1-25", "26-50", "51-75", "> 75"))\
+\
+##Index age\
+matches_ac <- matches_dem %>% group_by(Legend, age_cat) %>% summarize(Count= n())\
+matches_ac\
+\
+k<- ggplot(data=matches_ac, aes(x= age_cat, y=Count, fill= Legend)) + geom_bar(stat="identity", position= position_dodge(), alpha= 0.75) + labs(x= "Index Age Category (Days)", y = "Patient Count", title= "Comparison of Age at Matched Index Visit for Case and Control Populations", fill= "Legend")\
+k<- k + theme(text=element_text(family="Times New Roman", size=24))\
+k<- k + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) \
+k<- k + theme(text=element_text(family="Times New Roman", size=24)) + scale_fill_manual(values=c("black", "white")\
+                                                                                        , name="Legend")\
+\
+k<-k + scale_y_continuous(labels = space)\
+k<-k +  geom_bar(data=matches_ac, position=position_dodge(.9), stat="identity", colour="black",size=0.5)\
+k + scale_x_discrete(breaks=c("0729-1730", "1731-2730", "2731-3730", "3731-4730", "4731-5730", "5731-6570"),\
+                     labels=c("729-1 730", "1 731-2 730", "2 731-3 730", "3 731-4 730", "4 731-5 730", "5 731-6 570"))\
+\
+\
+##Remake graphs with no titles\
+\
+##Prior visits option 2 (final)\
+c<- ggplot(data=matches_pv, aes(x= visit_cat, y=Count, fill= Legend)) + geom_bar(stat="identity", position= position_dodge(), alpha= 0.75) + labs(x= "Visit Count Category", y = "Patient Count", fill= "Legend")\
+c<- c + theme(text=element_text(family="Times New Roman", size=30))\
+c<- c + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) \
+c<- c + theme(text=element_text(family="Times New Roman", size=30)) + scale_fill_manual(values=c("black", "white")\
+                                                                                        , name="Legend")\
+\
+c<-c + scale_y_continuous(labels = space)\
+c<-c +  geom_bar(data=matches_pv, position=position_dodge(.9), stat="identity", colour="black",size=0.5)\
+c<-c + scale_x_discrete(breaks=c("1-25", "26-50", "51-75", "Above 75"),\
+                     labels=c("1-25", "26-50", "51-75", "> 75"))\
+\
+c<- c + theme(legend.position = c(0.9, 0.8))\
+\
+##Index age\
+matches_ac <- matches_dem %>% group_by(Legend, age_cat) %>% summarize(Count= n())\
+matches_ac\
+\
+d<- ggplot(data=matches_ac, aes(x= age_cat, y=Count, fill= Legend)) + geom_bar(stat="identity", position= position_dodge(), alpha= 0.75) + labs(x= "Index Age Category (Days)", y = "Patient Count", fill= "Legend")\
+d<- d + theme(text=element_text(family="Times New Roman", size=30))\
+d<- d + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) \
+d<- d + theme(text=element_text(family="Times New Roman", size=30)) + scale_fill_manual(values=c("black", "white")\
+                                                                                        , name="Legend")\
+\
+d<-d + scale_y_continuous(labels = space)\
+d<-d +  geom_bar(data=matches_ac, position=position_dodge(.9), stat="identity", colour="black",size=0.5)\
+d + scale_x_discrete(breaks=c("0729-1730", "1731-2730", "2731-3730", "3731-4730", "4731-5730", "5731-6570"),\
+                     labels=c("729-1 730", "1 731-2 730", "2 731-3 730", "3 731-4 730", "4 731-5 730", "5 731-6 570"))\
+\
+\
+##New barplot for index age with categories based on years\
+\
+##Create categorical variables for Index age and Number of Prior Visits\
+#Index Age\
+#Controls\
+control_dem$age_cat= '.'\
+control_dem[, index_age := as.numeric(index_age)]\
+attach(control_dem)\
+control_dem$age_cat[index_age > 0 & index_age <=2190] <- "0729-2190" ##2-6 years\
+control_dem$age_cat[index_age > 2190 & index_age <=3650] <- "2190-3650" ##6-10 years\
+control_dem$age_cat[index_age > 3650 & index_age <=5110] <- "3650-5110" ## 10-14 years\
+control_dem$age_cat[index_age > 5110 & index_age <=6570] <- "5110-6570" ## 14-18 years\
+detach(control_dem)\
+\
+#Cases\
+case_pop$age_cat= '.'\
+case_pop[, index_age := as.numeric(index_age)]\
+attach(case_pop)\
+case_pop$age_cat[index_age > 0 & index_age <=2190] <- "0729-2190" ##2-6 years\
+case_pop$age_cat[index_age > 2190 & index_age <=3650] <- "2190-3650" ##6-10 years\
+case_pop$age_cat[index_age > 3650 & index_age <=5110] <- "3650-5110" ## 10-14 years\
+case_pop$age_cat[index_age > 5110 & index_age <=6570] <- "5110-6570" ## 14-18 years\
+detach(case_pop)\
+\
+##Index age\
+matches_ac <- matches_dem %>% group_by(Legend, age_cat) %>% summarize(Count= n())\
+matches_ac\
+\
+p <- ggplot(data=matches_ac, aes(x= age_cat, y=Count, fill= Legend)) + geom_bar(stat="identity", position= position_dodge(), alpha= 0.75) + labs(x= "Index Age Category", y = "Patient Count", title= "Comparison of Age at Matched Index Visit for Case and Control Populations", fill= "Legend")\
+p<- p + theme(text=element_text(family="Times New Roman", size=24))\
+p<- p + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) \
+p<- p + theme(text=element_text(family="Times New Roman", size=24)) + scale_fill_manual(values=c("black", "white")\
+                                                                                        , name="Legend")\
+\
+p<- ggplot(data=matches_ac, aes(x= age_cat, y=Count, fill= Legend)) + geom_bar(stat="identity", position= position_dodge(), alpha= 0.75) + labs(x= "Index Age Category (Years)", y = "Patient Count", fill= "Legend")\
+p<- p + theme(text=element_text(family="Times New Roman", size=30))\
+p<- p + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) \
+p<- p + theme(text=element_text(family="Times New Roman", size=30)) + scale_fill_manual(values=c("black", "white")\
+                                                                                        , name="Legend")\
+\
+p<-p + scale_y_continuous(labels = space)\
+p<-p +  geom_bar(data=matches_ac, position=position_dodge(.9), stat="identity", colour="black",size=0.5)\
+p<- p + scale_x_discrete(breaks=c("0729-2190", "2190-3650", "3650-5110", "5110-6570"),\
+                     labels=c("2-6", "7-10", "11-14", "15-18"))\
+\
+p<- p + theme(legend.position = c(0.9, 0.8))\
+\
+##New Bins" Number of Prior Index Visits\
+\
+#Number of Prior Visits\
+#Controls\
+control_dem$visit_cat= '.'\
+control_dem[, num_of_prior_visits := as.numeric(num_of_prior_visits)]\
+attach(control_dem)\
+control_dem$visit_cat[num_of_prior_visits > 0 & num_of_prior_visits <=10] <- "1-10"\
+control_dem$visit_cat[num_of_prior_visits > 10 & num_of_prior_visits <=20] <- "11-20"\
+control_dem$visit_cat[num_of_prior_visits > 20 & num_of_prior_visits <=30] <- "21-30"\
+control_dem$visit_cat[num_of_prior_visits > 30 & num_of_prior_visits <=40] <- "31-40"\
+control_dem$visit_cat[num_of_prior_visits > 40 & num_of_prior_visits <=50] <- "41-50"\
+control_dem$visit_cat[num_of_prior_visits > 50] <- "Above 50"\
+detach(control_dem)\
+\
+#Cases\
+case_pop$visit_cat= '.'\
+case_pop[, num_of_prior_visits := as.numeric(num_of_prior_visits)]\
+attach(case_pop)\
+case_pop$visit_cat[num_of_prior_visits > 0 & num_of_prior_visits <=10] <- "1-10"\
+case_pop$visit_cat[num_of_prior_visits > 10 & num_of_prior_visits <=20] <- "11-20"\
+case_pop$visit_cat[num_of_prior_visits > 20 & num_of_prior_visits <=30] <- "21-30"\
+case_pop$visit_cat[num_of_prior_visits > 30 & num_of_prior_visits <=40] <- "31-40"\
+case_pop$visit_cat[num_of_prior_visits > 40 & num_of_prior_visits <=50] <- "41-50"\
+case_pop$visit_cat[num_of_prior_visits > 50] <- "Above 50"\
+detach(case_pop)\
+\
+matches_dem <- rbind(control_dem, case_pop)\
+setDT(matches_dem)\
+\
+##Prior visits option 2 (final)\
+matches_pv <- matches_dem %>% group_by(Legend, visit_cat) %>% summarize(Count= n())\
+matches_pv\
+\
+space <- function(y, ...) \{ \
+  format(y, ..., big.mark = " ", scientific = FALSE, trim = TRUE)\
+\}\
+c<- ggplot(data=matches_pv, aes(x= visit_cat, y=Count, fill= Legend)) + geom_bar(stat="identity", position= position_dodge(), alpha= 0.75) + labs(x= "Visit Count Category", y = "Patient Count", fill= "Legend")\
+c<- c + theme(text=element_text(family="Times New Roman", size=30))\
+c<- c + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) \
+c<- c + theme(text=element_text(family="Times New Roman", size=30)) + scale_fill_manual(values=c("black", "white")\
+                                                                                        , name="Legend")\
+\
+c<-c + scale_y_continuous(labels = space)\
+c<-c +  geom_bar(data=matches_pv, position=position_dodge(.9), stat="identity", colour="black",size=0.5)\
+c<-c + scale_x_discrete(breaks=c("1-10", "11-20", "21-30", "31-40", "41-50", "Above 50"),\
+                        labels=c("1-10", "11-20", "21-30", "31-40", "41-50", "> 50"))\
+\
+c<- c + theme(legend.position = c(0.9, 0.8))\
+\
+\
+## Compare difference in means\
+## I need to read in the pair IDs\
+##Create 2 DTs \
+\
+pair_ids = read.csv('~/final_pairs_IDs.csv')\
+setDT(pair_ids)\
+\
+##Case IDs\
+case_ids <- pair_ids[,c(1,3)]\
+setDT(case_ids)\
+colnames(case_ids) <- c("person_id", "ID")\
+#colnames(case_ids) <- c("case_person_id", "ID")\
+\
+\
+##Control IDs\
+control_ids <- pair_ids[,c(2,3)]\
+setDT(control_ids)\
+colnames(control_ids) <- c("person_id", "ID")\
+#colnames(control_ids) <- c("cont_person_id", "ID")\
+\
+setkey(control_ids, "person_id")\
+setkey(case_ids, "person_id")\
+setkey(matches_dem, "person_id")\
+\
+\
+cont = matches_dem[control_ids]\
+setDT(cont)\
+\
+case = matches_dem[case_ids]\
+setDT(case)\
+\
+names(case)[names(case) == 'person_id'] <- 'case_person_id'\
+\
+names(cont)[names(cont) == 'person_id'] <- 'cont_person_id'\
+\
+colnames(case) <- c("case_person_id", "gender", "case_index_age", "case_num_of prior visits", "casecont", "Legend", "age_cat", "visit_cat", "ID")\
+\
+setkey(cont, "ID")\
+setkey(case, "ID")\
+tot= cbind(case, cont)\
+\
+tot$vis_diff <- (tot$'case_num_of prior visits' - tot$'num_of_prior_visits')\
+vis_diff<- abs(tot$vis_diff )\
+mean(vis_diff)\
+sd(vis_diff)\
+median(vis_diff)\
+\
+tot$age_diff <- (tot$'case_index_age' - tot$'index_age')\
+age_diff<- abs(tot$age_diff )\
+mean(age_diff)\
+sd(age_diff)\
+median(age_diff)}

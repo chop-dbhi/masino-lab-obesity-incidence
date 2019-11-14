@@ -1,0 +1,125 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww15480\viewh11580\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 library('RPostgreSQL')\
+library(getPass)\
+library(sqldf)\
+library(plyr)\
+library(ggplot2)\
+library(scales)\
+library(data.table)\
+library("dplyr")\
+library(extrafont)\
+library(caTools)\
+library(arulesSequences)\
+library(Matrix)\
+library(arules)\
+library(e1071)\
+library(devtools)\
+library(reshape2)\
+\
+pg = dbDriver("PostgreSQL")\
+con = dbConnect(pg, user="campbelle2", password=getPass::getPass(), host="reslnpbddb01.research.chop.edu",\
+                port=5432, dbname="pbd_cohort")\
+\
+plausible_bmi = "select person_id, visit_occurrence_id from obesity_pangx_v27.heightconvert_weightconvert_bmi_zscore_flag where height_biv = 0 and weight_biv=0"\
+data(plausible_bmi)\
+setDT(plausible_bmi)\
+\
+bmi_measures = "SELECT ps1.person_id, ms1.measurement_date, ms1.visit_occurrence_id\
+FROM chop_pbd_v27.person ps1  JOIN chop_pbd_v27.measurement_anthro ms1 ON ps1.person_id = ms1.person_id\
+WHERE ms1.measurement_concept_id = 2000000043 \
+AND ms1.measurement_date  - make_date(ps1.year_of_birth, ps1.month_of_birth, ps1.day_of_birth) >= (2*365)\
+AND ms1.measurement_date  - make_date(ps1.year_of_birth, ps1.month_of_birth, ps1.day_of_birth) <= (18*365)\
+AND  DATE (ms1.measurement_date) > DATE (concat_ws('-', ps1.year_of_birth, ps1.month_of_birth, ps1.day_of_birth )) \
+"\
+\
+bmi_measures <- dbGetQuery(con, bmi_measures)\
+data(bmi_measures)\
+setDT(bmi_measures)\
+\
+pre_index_vID <- subset(total2, Timing_Class== '1', select=c(person_id, visit_occurrence_id))\
+setDT(pre_index_vID)\
+pre_index_vID= unique(pre_index_vID)\
+\
+past_bmi = pre_index_vID[visit_occurrence_id %in% bmi_measures$visit_occurrence_id]\
+setDT(past_bmi)\
+\
+past_bmi[,.N,by=person_id]\
+\
+\
+pre_obese = "WITH ms_dates as \
+(SELECT ps1.person_id, ms1.measurement_date\
+FROM chop_pbd_v27.person ps1  JOIN chop_pbd_v27.measurement_anthro ms1 ON ps1.person_id = ms1.person_id\
+WHERE ms1.measurement_concept_id = 2000000043 AND ms1.value_as_number > 1.645 AND DATE (ms1.measurement_date) > '12/31/2008'AND DATE (ms1.measurement_date) < '01/01/2017'\
+AND ms1.measurement_date  - make_date(ps1.year_of_birth, ps1.month_of_birth, ps1.day_of_birth) >= (2*365)\
+AND ms1.measurement_date  - make_date(ps1.year_of_birth, ps1.month_of_birth, ps1.day_of_birth) <= (18*365)\
+\
+AND  DATE (ms1.measurement_date) > DATE (concat_ws('-', ps1.year_of_birth, ps1.month_of_birth, ps1.day_of_birth ))),\
+\
+co_before_obese AS \
+(SELECT co_tbl.person_id, min_dates_tbl.min_obese_date, condition_start_date, visit_occurrence_id, condition_concept_id, condition_source_concept_id\
+FROM chop_pbd_v27.condition_occurrence AS co_tbl\
+INNER JOIN\
+(\
+  SELECT person_id, MIN(measurement_date) AS min_obese_date FROM ms_dates \
+  GROUP BY (person_id)\
+) AS min_dates_tbl\
+  ON min_dates_tbl.person_id = co_tbl.person_id\
+  WHERE co_tbl.condition_start_date < min_dates_tbl.min_obese_date AND DATE(co_tbl.condition_start_date) > '12/31/2004' AND DATE(co_tbl.condition_start_date) < '01/01/2018'\
+)\
+SELECT t1.person_id, t1.min_obese_date, condition_concept_id, visit_occurrence_id, condition_source_concept_id, condition_start_date FROM co_before_obese AS t1\
+\
+"\
+pre_obese <- dbGetQuery(con, pre_obese)\
+data(pre_obese)\
+setDT(pre_obese)\
+View(pre_obese)\
+\
+z = pre_obese[visit_occurrence_id %in% bmi_measures$visit_occurrence_id]\
+setDT(z)\
+z[, person_id := as.factor(person_id)]\
+z[,.N,by=person_id]\
+\
+p_id <- subset(total2, select=c(unique(person_id)))\
+setDT(p_id)\
+p_id[, person_id := as.factor(person_id)]\
+p_id= p_id[!duplicated(p_id), ]\
+\
+y = z[person_id %in% p_id$person_id]\
+y[,.N,by=person_id]\
+setDT(y)\
+\
+y[, condition_start_date := as.Date(condition_start_date)]\
+y[, min_obese_date := as.Date(min_obese_date)]\
+\
+y$time_diff<- difftime(y$min_obese_date, y$condition_start_date, units = c("days"))\
+\
+y2 <- y[,c(1,4,7)]\
+setDT(y2)\
+y2 = y2[!duplicated(y2), ]\
+f= y2[ , .SD[which.min(time_diff)], by = person_id]\
+setDT(f)\
+\
+mean(f$time_diff)\
+median(f$time_diff)\
+sd(f$time_diff)\
+\
+t = f[visit_occurrence_id %in% total2$visit_occurrence_id]\
+t[,.N,by=person_id]\
+mean(t$time_diff)\
+median(t$time_diff)\
+sd(t$time_diff)\
+\
+t2 = f[!(visit_occurrence_id %in% total2$visit_occurrence_id)]\
+t2[,.N,by=person_id]\
+mean(t2$time_diff)\
+median(t2$time_diff)\
+sd(t2$time_diff)\
+\
+\
+}

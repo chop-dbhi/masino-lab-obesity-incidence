@@ -1,0 +1,1533 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 seq_counts = read.csv('~/mc_nemar_counts.csv')\
+setDT(seq_counts)\
+\
+##need for each spade pattern, the four counts:\
+##c1 = case +, control + for pattern c2 = case +, control - c3 = case -, control + c4 = case -, control - \
+\
+\
+#Sequences 1-10\
+\
+#1-ADM-05\
+#Administrative concerns and non-specific laboratory abnormalities (pre-index)\
+seq_1<- seq_counts[1,]\
+mcnemar.test(matrix(c(51, 1659,	1690,	46294),ncol=2), correct = F)\
+seq_1$p_value = '0.5922'\
+setDT(seq_1)\
+\
+#1-ALL-03\
+#Allergic rhinitis (pre-index)\
+seq_2<- seq_counts[2,]\
+mcnemar.test(matrix(c(215,	2688,	2779,	44012),ncol=2), correct = F)\
+seq_2$p_value = '0.2184'\
+setDT(seq_2)\
+\
+#1-ALL03,1-ALL04\
+#Allergic Rhinitis and Asthma, w/o status asthmaticus (pre-index)\
+seq_3<- seq_counts[3,]\
+mcnemar.test(matrix(c(35,	979,	1112,	47568),ncol=2), correct = F)\
+seq_3$p_value = '0.003631'\
+setDT(seq_3)\
+\
+#1-ALL03,1-ALL04,2-ALL04\
+#Allergic Rhinitis and Asthma, w/o status asthmaticus (pre-index);Asthma, w/o status asthmaticus (index)\
+seq_4<- seq_counts[4,]\
+mcnemar.test(matrix(c(14,	532,	725,	48423),ncol=2), correct = F)\
+seq_4$p_value = '0.0000000522'\
+setDT(seq_4)\
+\
+#1-ALL03,2-ALL03\
+#Allergic rhinitis (pre-index), Allergic rhinitis (index)\
+seq_5<- seq_counts[5,]\
+mcnemar.test(matrix(c(25,	782,	1029,	47858),ncol=2), correct = F)\
+seq_5$p_value = '0.00000000647'\
+setDT(seq_5)\
+\
+#1-ALL03,2-ALL03,2-ALL04\
+#Allergic rhinitis (pre-index), Allergic rhinitis (index), Asthma, w/o status asthmaticus (index)\
+seq_6<- seq_counts[6,]\
+mcnemar.test(matrix(c(6,	353,	544,	48791),ncol=2), correct = F)\
+seq_6$p_value = '0.0000000001802'\
+setDT(seq_6)\
+\
+#1-ALL03,2-ALL04\
+#Allergic rhinitis (pre-index), Asthma, w/o status asthmaticus (index)\
+seq_7<- seq_counts[7,]\
+mcnemar.test(matrix(c(25,	672,	933,	48064),ncol=2), correct = F)\
+seq_7$p_value = '0.00000000007277'\
+setDT(seq_7)\
+\
+#1-ALL04\
+#Asthma, w/o status asthmaticus (pre-index)\
+seq_8<- seq_counts[8,]\
+mcnemar.test(matrix(c(534,	3660,	4798,	40702),ncol=2), correct = F)\
+seq_8$p_value = '0.00000000000000022'\
+setDT(seq_8)\
+\
+#1-ALL04,2-ALL03\
+#Asthma, w/o status asthmaticus (pre-index); Allergic rhinitis (index)\
+seq_9<- seq_counts[9,]\
+mcnemar.test(matrix(c(18,	634,	1035,	48007),ncol=2), correct = F)\
+seq_9$p_value = '0.00000000000000022'\
+setDT(seq_9)\
+\
+#1-ALL04,2-ALL03,2-ALL04\
+#Asthma, w/o status asthmaticus (pre-index); Allergic rhinitis (index), Asthma, w/o status asthmaticus (index)\
+seq_10<- seq_counts[10,]\
+mcnemar.test(matrix(c(14,	526,	907,	48247),ncol=2), correct = F)\
+seq_10$p_value = '0.00000000000000022'\
+setDT(seq_10)\
+\
+##Combine chi square for sequences 1-10\
+chi_set1 = rbind(seq_1, seq_2, seq_3, seq_4, seq_5, seq_6, seq_7, seq_8, seq_9, seq_10)\
+setDT(chi_set1)\
+\
+#Sequences 11-20\
+\
+#1-ALL04,2-ALL04\
+#Asthma, w/o status asthmaticus (pre-index); Asthma, w/o status asthmaticus (index)\
+seq_11<- seq_counts[11,]\
+mcnemar.test(matrix(c(177,	1931,	2991,	44595),ncol=2), correct = F)\
+seq_11$p_value = '0.00000000000000022'\
+setDT(seq_11)\
+\
+#1-ALL04,2-ALL04,2-NUT03\
+#Asthma, w/o status asthmaticus (pre-index); Asthma, w/o status asthmaticus (index), Obesity (Index)\
+seq_12<- seq_counts[12,]\
+mcnemar.test(matrix(c(0,	0,	575,	49119),ncol=2), correct = F)\
+seq_12$p_value = '0.00000000000000022'\
+setDT(seq_12)\
+\
+#1-ALL04,2-ALL04,3-ALL04\
+#Asthma, w/o status asthmaticus (pre-index); Asthma, w/o status asthmaticus (index); Asthma, w/o status asthmaticus (post-index)\
+seq_13<- seq_counts[13,]\
+mcnemar.test(matrix(c(45,	1130,	1218,	47301),ncol=2), correct = F)\
+seq_13$p_value = '0.06936'\
+setDT(seq_13)\
+\
+#1-ALL04,2-NUT03\
+#Asthma, w/o status asthmaticus (pre-index); Obesity (Index)\
+seq_14<- seq_counts[14,]\
+mcnemar.test(matrix(c(0,	1,	794,	48899),ncol=2), correct = F)\
+seq_14$p_value = '0.00000000000000022'\
+setDT(seq_14)\
+\
+#1-ALL04,2-SKN02\
+#Asthma, w/o status asthmaticus (pre-index); Dermatitis and eczema (Index)\
+seq_15<- seq_counts[15,]\
+mcnemar.test(matrix(c(6,	347,	566,	48775),ncol=2), correct = F)\
+seq_15$p_value = '0.0000000000004235'\
+setDT(seq_15)\
+\
+#1-EAR01\
+# Otitis media (pre-index)\
+seq_16<- seq_counts[16,]\
+mcnemar.test(matrix(c(744,	4590,	4656,	39704),ncol=2), correct = F)\
+seq_16$p_value = '0.4925'\
+setDT(seq_16)\
+\
+#1-EAR01,1-EAR08\
+# Otitis media (pre-index); Deafness, hearing loss (pre-index)\
+seq_17<- seq_counts[17,]\
+mcnemar.test(matrix(c(19,	616,	929,	48130),ncol=2), correct = F)\
+seq_17$p_value = '0.000000000000001678'\
+setDT(seq_17)\
+\
+#1-EAR01,1-EAR11\
+# Otitis media (pre-index); Acute upper respiratory tract infection (pre-index)\
+seq_18<- seq_counts[18,]\
+mcnemar.test(matrix(c(22,	924,	803,	47945),ncol=2), correct = F)\
+seq_18$p_value = '0.003595'\
+setDT(seq_18)\
+\
+#1-EAR01,2-ALL04\
+# Otitis media (pre-index); Asthma, w/o status asthmaticus (index)\
+seq_19<- seq_counts[19,]\
+mcnemar.test(matrix(c(5,	319,	607,	48763),ncol=2), correct = F)\
+seq_19$p_value = '0.00000000000000022'\
+setDT(seq_19)\
+\
+#1-EAR01,2-EAR01\
+# Otitis media (pre-index); Otitis media (index)\
+seq_20<- seq_counts[20,]\
+mcnemar.test(matrix(c(89,	2117,	1408,	46080),ncol=2), correct = F)\
+seq_20$p_value = '0.00000000000000022'\
+setDT(seq_20)\
+\
+##Combine chi square for sequences 11-20\
+chi_set2 = rbind(seq_11, seq_12, seq_13, seq_14, seq_15, seq_16, seq_17, seq_18, seq_19, seq_20)\
+setDT(chi_set2)\
+\
+##Sequences 21-30\
+\
+#1-EAR01,2-EAR01,3-EAR01\
+# Otitis media (pre-index); Otitis media (index); Otitis media (post-index)\
+seq_21<- seq_counts[21,]\
+mcnemar.test(matrix(c(28,	1147,	850,	47669),ncol=2), correct = F)\
+seq_21$p_value = '0.00000000003009'\
+setDT(seq_21)\
+\
+#1-EAR01,2-NUT03\
+# Otitis media (pre-index); Obesity (index)\
+seq_22<- seq_counts[22,]\
+mcnemar.test(matrix(c(0,	0,	555,	49139),ncol=2), correct = F)\
+seq_22$p_value = '0.00000000000000022'\
+setDT(seq_22)\
+\
+#1-EAR07\
+# Wax in ear (pre-index)\
+seq_23<- seq_counts[23,]\
+mcnemar.test(matrix(c(8,	514,	531,	48641),ncol=2), correct = F)\
+seq_23$p_value = '0.599'\
+setDT(seq_23)\
+\
+#1-EAR08\
+# Deafness, hearing loss (pre-index)\
+seq_24<- seq_counts[24,]\
+mcnemar.test(matrix(c(93,	1380,	2113,	46108),ncol=2), correct = F)\
+seq_24$p_value = '0.00000000000000022'\
+setDT(seq_24)\
+\
+#1-EAR08,2-EAR01\
+# Deafness, hearing loss (pre-index); Otitis media (index)\
+seq_25<- seq_counts[25,]\
+mcnemar.test(matrix(c(7,	459,	492,	48736),ncol=2), correct = F)\
+seq_25$p_value = '0.2846'\
+setDT(seq_25)\
+\
+#1-EAR09\
+# Chronic pharyngitis and tonsillitis (pre-index)\
+seq_26<- seq_counts[26,]\
+mcnemar.test(matrix(c(17,	643,	1089,	47945),ncol=2), correct = F)\
+seq_26$p_value = '0.00000000000000022'\
+setDT(seq_26)\
+\
+#1-EAR11\
+# Acute upper respiratory tract infection (pre-index)\
+seq_27<- seq_counts[27,]\
+mcnemar.test(matrix(c(1141,	6766,	5680,	36107),ncol=2), correct = F)\
+seq_27$p_value = '0.00000000000000022'\
+setDT(seq_27)\
+\
+#1-EAR11,1-ALL04\
+# Acute upper respiratory tract infection (pre-index) and Asthma, w/o status asthmaticus (pre-index)\
+seq_28<- seq_counts[28,]\
+mcnemar.test(matrix(c(6,	505,	746,	48437),ncol=2), correct = F)\
+seq_28$p_value = '0.000000000009506'\
+setDT(seq_28)\
+\
+#1-EAR11,1-GSI03\
+# Acute upper respiratory tract infection (pre-index) and Fever (pre-index)\
+seq_29<- seq_counts[29,]\
+mcnemar.test(matrix(c(6,	468,	522,	48698),ncol=2), correct = F)\
+seq_29$p_value = '0.08612'\
+setDT(seq_29)\
+\
+#1-EAR11,2-ALL03\
+# Acute upper respiratory tract infection (pre-index); Allergic rhinitis (index)\
+seq_30<- seq_counts[30,]\
+mcnemar.test(matrix(c(8,	473,	694,	48519),ncol=2), correct = F)\
+seq_30$p_value = '0.00000000009846'\
+setDT(seq_30)\
+\
+##Combine chi square for sequences 21-30\
+chi_set3 = rbind(seq_21, seq_22, seq_23, seq_24, seq_25, seq_26, seq_27, seq_28, seq_29, seq_30)\
+setDT(chi_set3)\
+\
+##Sequences 31-40\
+\
+#1-EAR11,2-ALL04 \
+# Acute upper respiratory tract infection (pre-index); Asthma, w/o status asthmaticus (index)\
+seq_31<- seq_counts[31,]\
+mcnemar.test(matrix(c(19,	641,	1070,	47964),ncol=2), correct = F)\
+seq_31$p_value = '0.00000000000000022'\
+setDT(seq_31)\
+\
+#1-EAR11,2-EAR11\
+# Acute upper respiratory tract infection (pre-index); Acute upper respiratory tract infection (index)\
+seq_32<- seq_counts[32,]\
+mcnemar.test(matrix(c(51,	2404,	936,	46303),ncol=2), correct = F)\
+seq_32$p_value = '0.00000000000000022'\
+setDT(seq_32)\
+\
+#1-EAR11,2-NUT03\
+#  Acute upper respiratory tract infection (pre-index); Obesity (index)\
+seq_33<- seq_counts[33,]\
+mcnemar.test(matrix(c(0,	3,	1216,	48475),ncol=2), correct = F)\
+seq_33$p_value = '0.00000000000000022'\
+setDT(seq_33)\
+\
+#1-EAR11,2-SKN02\
+#  Acute upper respiratory tract infection (pre-index); Dermatitis and eczema (index)\
+seq_34<- seq_counts[34,]\
+mcnemar.test(matrix(c(6,	378,	504,	48806),ncol=2), correct = F)\
+seq_34$p_value = '0.00002209'\
+setDT(seq_34)\
+\
+#1-EAR12\
+#ENT disorders, other (pre-index)\
+seq_35<- seq_counts[35,]\
+mcnemar.test(matrix(c(7,	521,	699,	48467),ncol=2), correct = F)\
+seq_35$p_value = '0.0000003467'\
+setDT(seq_35)			\
+\
+#1-END05\
+#Other endocrine disorders (pre-index)\
+seq_36<- seq_counts[36,]\
+mcnemar.test(matrix(c(5,	443,	500,	48746),ncol=2), correct = F)\
+seq_36$p_value = '0.06343'\
+setDT(seq_36)			\
+\
+#1-EYE07\
+#Conjunctivitis, keratitis (pre-index)\
+seq_37<- seq_counts[37,]\
+mcnemar.test(matrix(c(20,	839,	726,	48109),ncol=2), correct = F)\
+seq_37$p_value = '0.004285'\
+setDT(seq_37)			\
+\
+#1-EYE11\
+#Strabismus, amblyopia (pre-index)\
+seq_38<- seq_counts[38,]\
+mcnemar.test(matrix(c(6,	488,	616,	48584),ncol=2), correct = F)\
+seq_38$p_value = '0.000117'\
+setDT(seq_38)	\
+\
+#1-GAS03\
+#Constipation (pre-index)\
+seq_39<- seq_counts[39,]\
+mcnemar.test(matrix(c(22,	1170,	1326,	47176),ncol=2), correct = F)\
+seq_39$p_value = '0.001793'\
+setDT(seq_39)		\
+\
+#1-GAS07\
+#Gastroenteritis (pre-index)\
+seq_40<- seq_counts[40,]\
+mcnemar.test(matrix(c(13,	766,	889,	48026),ncol=2), correct = F)\
+seq_40$p_value = '0.002499'\
+setDT(seq_40)	\
+\
+##Combine chi square for sequences 31-40\
+chi_set4 = rbind(seq_31, seq_32, seq_33, seq_34, seq_35, seq_36, seq_37, seq_38, seq_39, seq_40)\
+setDT(chi_set4)\
+\
+##Sequences 41-50\
+\
+#1-GAS08\
+# Gastroesophageal reflux (pre-index)\
+seq_41<- seq_counts[41,]\
+mcnemar.test(matrix(c(19,	757,	830,	48088),ncol=2), correct = F)\
+seq_41$p_value = '0.06688'\
+setDT(seq_41)\
+\
+#1-GSI01\
+# Nonspecific signs and symptoms (pre-index)\
+seq_42<- seq_counts[42,]\
+mcnemar.test(matrix(c(12,	836,	756,	48090),ncol=2), correct = F)\
+seq_42$p_value = '0.04496'\
+setDT(seq_42)\
+\
+#1-GSI03\
+# Fever (pre-index)\
+seq_43<- seq_counts[43,]\
+mcnemar.test(matrix(c(33,	1110,	1236,	47315),ncol=2), correct = F)\
+seq_43$p_value = '0.009285'\
+setDT(seq_43)\
+\
+#1-GSI05\
+#Nausea, vomiting (pre-index)\
+seq_44 <- seq_counts[44,]\
+mcnemar.test(matrix(c(6,	473,	672,	48543),ncol=2), correct = F)\
+seq_44$p_value = '0.000000004078'\
+setDT(seq_44)\
+\
+#1-GSU09\
+#Nonfungal infections of skin and subcutaneous tissue (pre-index)\
+seq_45 <- seq_counts[45,]\
+mcnemar.test(matrix(c(10,	639,	786,	48259),ncol=2), correct = F)\
+seq_45$p_value = '0.00009855'\
+setDT(seq_45)\
+\
+#1-GSU10\
+#Abdominal pain (pre-index)\
+seq_46 <- seq_counts[46,]\
+mcnemar.test(matrix(c(39,	1261,	1048,	47346),ncol=2), correct = F)\
+seq_46$p_value = '0.000009306'\
+setDT(seq_46)\
+\
+#1-GUR06\
+#Urinary symptoms (pre-index)\
+seq_47 <- seq_counts[47,]\
+mcnemar.test(matrix(c(21,	1023,	1226,	47424),ncol=2), correct = F)\
+seq_47$p_value = '0.00001864'\
+setDT(seq_47)\
+\
+#1-INF06\
+#Viral syndromes (pre-index)\
+seq_48 <- seq_counts[48,]\
+mcnemar.test(matrix(c(84,	1749,	1795,	46066),ncol=2), correct = F)\
+seq_48$p_value = '0.4397'\
+setDT(seq_48)\
+\
+#1-INF06,1-EAR11\
+#Viral syndromes (pre-index), Acute upper respiratory tract infection (pre-index)\
+seq_49 <- seq_counts[49,]\
+mcnemar.test(matrix(c(8,	592,	555,	48539),ncol=2), correct = F)\
+seq_49$p_value = '0.2746'\
+setDT(seq_49)\
+\
+#1-MUS01\
+#Musculoskeletal signs and symptoms (pre-index)\
+seq_50 <- seq_counts[50,]\
+mcnemar.test(matrix(c(42,	1251,	1113,	47288),ncol=2), correct = F)\
+seq_50$p_value = '0.004536'\
+setDT(seq_50)\
+\
+##Combine chi square for sequences 41-50\
+chi_set5 = rbind(seq_41, seq_42, seq_43, seq_44, seq_45, seq_46, seq_47, seq_48, seq_49, seq_50)\
+setDT(chi_set5)\
+\
+##Combine chi square results for sequences 1-50\
+\
+full_seq1 = rbind(chi_set1, chi_set2, chi_set3, chi_set4, chi_set5)\
+setDT(full_seq1)			\
+\
+##Sequences 51-60\
+\
+#1-MUS02\
+# Acute sprains and strains (pre-index)\
+seq_51<- seq_counts[51,]\
+mcnemar.test(matrix(c(42,	1041,	1065,	47546),ncol=2), correct = F)\
+seq_51$p_value = '0.601'\
+setDT(seq_51)\
+\
+#1-MUS04\
+# Fractures (excluding digits) (pre-index)\
+seq_52<- seq_counts[52,]\
+mcnemar.test(matrix(c(62,	1478,	1199,	46955),ncol=2), correct = F)\
+seq_52$p_value = '0.00000006953'\
+setDT(seq_52)\
+\
+#1-MUS04,2-MUS04\
+# Fractures (excluding digits) (pre-index); Fractures (excluding digits) (index)\
+seq_53<- seq_counts[53,]\
+mcnemar.test(matrix(c(31,	1121,	794,	47748),ncol=2), correct = F)\
+seq_53$p_value = '0.00000000000007871'\
+setDT(seq_53)\
+\
+#1-MUS17\
+# Musculoskeletal disorders, other (pre-index)\
+seq_54<- seq_counts[54,]\
+mcnemar.test(matrix(c(31,	1031,	918,	47714),ncol=2), correct = F)\
+seq_54$p_value = '0.01048'\
+setDT(seq_54)\
+\
+#1-NUR01\
+# Neurologic signs and symptoms (pre-index)\
+seq_55<- seq_counts[55,]\
+mcnemar.test(matrix(c(9,	683,	645,	48357),ncol=2), correct = F)\
+seq_55$p_value = '0.2971'\
+setDT(seq_55)\
+\
+#1-NUR02\
+# Headaches (pre-index)\
+seq_56<- seq_counts[56,]\
+mcnemar.test(matrix(c(26,	700,	930,	48038),ncol=2), correct = F)\
+seq_56$p_value = '0.0000000122'\
+setDT(seq_56)\
+\
+#1-NUR07\
+# Seizure disorder (pre-index)\
+seq_57<- seq_counts[57,]\
+mcnemar.test(matrix(c(15,	603,	890,	48186),ncol=2), correct = F)\
+seq_57$p_value = '0.0000000000001105'\
+setDT(seq_57)\
+\
+#1-NUR07,2-NUR07	\
+# Seizure disorder (pre-index); Seizure disorder (index)\
+seq_58<- seq_counts[58,]\
+mcnemar.test(matrix(c(4,	418,	606,	48666),ncol=2), correct = F)\
+seq_58$p_value = '0.000000004228'\
+setDT(seq_58)\
+\
+#1-NUR10	\
+# Sleep problems (pre-index)\
+seq_59<- seq_counts[59,]\
+mcnemar.test(matrix(c(9,	402,	650,	48633),ncol=2), correct = F)\
+seq_59$p_value = '0.00000000000002071'\
+setDT(seq_59)\
+\
+#1-NUR19	\
+# Developmental disorder (pre-index)\
+seq_60<- seq_counts[60,]\
+mcnemar.test(matrix(c(61,	1391,	1429,	46813),ncol=2), correct = F)\
+seq_60$p_value = '0.4742'\
+setDT(seq_60)\
+\
+##Combine chi square for sequences 51-60\
+chi_set6 = rbind(seq_51, seq_52, seq_53, seq_54, seq_55, seq_56, seq_57, seq_58, seq_59, seq_60)\
+setDT(chi_set6)\
+\
+##Sequences 61-70\
+\
+#1-NUR19,2-NUR19\
+# Developmental disorder (pre-index); Developmental disorder (index)\
+seq_61<- seq_counts[61,]\
+mcnemar.test(matrix(c(12,	668,	607,	48407),ncol=2), correct = F)\
+seq_61$p_value = '0.08757'\
+setDT(seq_61)\
+\
+#1-NUR26\
+# Autism Spectrum Disorder (pre-index)\
+seq_62<- seq_counts[62,]\
+mcnemar.test(matrix(c(6,	377,	580,	48731),ncol=2), correct = F)\
+seq_62$p_value = '0.00000000005307'\
+setDT(seq_62)\
+\
+#1-NUT03\
+#Obesity (pre-index)\
+seq_63<- seq_counts[63,]\
+mcnemar.test(matrix(c(0,	9,	1614,	48071),ncol=2), correct = F)\
+seq_63$p_value = '0.00000000000000022'\
+setDT(seq_63)\
+\
+#1-NUT03,2-NUT03\
+#Obesity (pre-index); Obesity (index)\
+seq_64<- seq_counts[64,]\
+mcnemar.test(matrix(c(0,	1,	993,	48700),ncol=2), correct = F)\
+seq_64$p_value = '0.00000000000000022'\
+setDT(seq_64)\
+\
+#1-PSY05\
+#Attention deficit disorder (pre-index)\
+seq_65<- seq_counts[65,]\
+mcnemar.test(matrix(c(42,	1273,	766,	47613),ncol=2), correct = F)\
+seq_65$p_value = '0.00000000000000022'\
+setDT(seq_65)\
+\
+#1-REC02\
+#Lacerations (pre-index)\
+seq_66<- seq_counts[66,]\
+mcnemar.test(matrix(c(2,	417,	533,	48742),ncol=2), correct = F)\
+seq_66$p_value = '0.0001675'\
+setDT(seq_66)\
+\
+#1-RES01\
+#Respiratory signs and symptoms (pre-index)\
+seq_67<- seq_counts[67,]\
+mcnemar.test(matrix(c(34,	1060,	1275,	47325),ncol=2), correct = F)\
+seq_67$p_value = '0.000008614'\
+setDT(seq_67)\
+\
+#1-RES02\
+#Acute lower respiratory tract infection (pre-index)\
+seq_68<- seq_counts[68,]\
+mcnemar.test(matrix(c(2,	670,	551,	48471),ncol=2), correct = F)\
+seq_68$p_value = '0.0006603'\
+setDT(seq_68)\
+\
+#1-RES05\
+#Cough (pre-index)\
+seq_69<- seq_counts[69,]\
+mcnemar.test(matrix(c(48,	1432,	1437,	46777),ncol=2), correct = F)\
+seq_69$p_value = '0.9256'\
+setDT(seq_69)\
+\
+#1-RES05,1-EAR11\
+#Cough (pre-index); Acute upper respiratory tract infection (pre-index)\
+seq_70 <- seq_counts[70,]\
+mcnemar.test(matrix(c(6,	449,	496,	48743),ncol=2), correct = F)\
+seq_70$p_value = '0.1263'\
+setDT(seq_70)\
+\
+##Combine chi square for sequences 61-70\
+chi_set7 = rbind(seq_61, seq_62, seq_63, seq_64, seq_65, seq_66, seq_67, seq_68, seq_69, seq_70)\
+setDT(chi_set7)\
+\
+##Sequences 71-80\
+\
+#1-RES06\
+# Sleep apnea (pre-index)\
+seq_71<- seq_counts[71,]\
+mcnemar.test(matrix(c(5,	277,	776,	48636),ncol=2), correct = F)\
+seq_71$p_value = '0.00000000000000022'\
+setDT(seq_71)\
+\
+#1-RES07\
+# Sinusitis (pre-index)\
+seq_72<- seq_counts[72,]\
+mcnemar.test(matrix(c(40,	1313,	1076,	47265),ncol=2), correct = F)\
+seq_72$p_value = '0.000001242'\
+setDT(seq_72)\
+\
+#1-SKN01\
+#Contusions and abrasions (pre-index)\
+seq_73<- seq_counts[73,]\
+mcnemar.test(matrix(c(24,	915,	1285,	47470),ncol=2), correct = F)\
+seq_73$p_value = '0.00000000000000306'\
+setDT(seq_73)\
+\
+#1-SKN02\
+#Dermatitis and eczema (pre-index)\
+seq_74<- seq_counts[74,]\
+mcnemar.test(matrix(c(156,	2493,	2726,	44319),ncol=2), correct = F)\
+seq_74$p_value = '0.001259'\
+setDT(seq_74)\
+\
+#1-SKN02 1-ALL04\
+#Dermatitis and eczema (pre-index); Asthma, w/o status asthmaticus (pre-index)\
+seq_75<- seq_counts[75,]\
+mcnemar.test(matrix(c(8,	440,	535,	48711),ncol=2), correct = F)\
+seq_75$p_value = '0.002347'\
+setDT(seq_75)\
+\
+#1-SKN02 2-ALL04\
+#Dermatitis and eczema (pre-index); Asthma, w/o status asthmaticus (index)\
+seq_76<- seq_counts[76,]\
+mcnemar.test(matrix(c(9,	384,	593,	48708),ncol=2), correct = F)\
+seq_76$p_value = '0.00000000002286'\
+setDT(seq_76)\
+\
+#1-SKN02 2-SKN02\
+#Dermatitis and eczema (pre-index); Dermatitis and eczema (index)\
+seq_77<- seq_counts[77,]\
+mcnemar.test(matrix(c(13,	720,	947,	48014),ncol=2), correct = F)\
+seq_77$p_value = '0.00000002701'\
+setDT(seq_77)\
+\
+#1-SKN09\
+#Exanthems (pre-index)\
+seq_78<- seq_counts[78,]\
+mcnemar.test(matrix(c(9,	522,	685,	48478),ncol=2), correct = F)\
+seq_78$p_value = '0.000002709'\
+setDT(seq_78)\
+\
+\
+#1-SKN11\
+#Dermatophytoses (pre-index)\
+seq_79<- seq_counts[79,]\
+mcnemar.test(matrix(c(4,	511,	602,	48577),ncol=2), correct = F)\
+seq_79$p_value = '0.006378'\
+setDT(seq_79)\
+\
+#1-SKN17\
+#Other skin disorders (pre-index)\
+seq_80<- seq_counts[80,]\
+mcnemar.test(matrix(c(4,	463,	541,	48686),ncol=2), correct = F)\
+seq_80$p_value = '0.01383'\
+setDT(seq_80)\
+\
+##Combine chi square for sequences 71-80\
+chi_set8 = rbind(seq_71, seq_72, seq_73, seq_74, seq_75, seq_76, seq_77, seq_78, seq_79, seq_80)\
+setDT(chi_set8)\
+\
+##Sequences 81-90\
+\
+#2-ADM05\
+#Administrative concerns and non-specific laboratory abnormalities (index)\
+seq_81<- seq_counts[81,]\
+mcnemar.test(matrix(c(53,	1609,	1570,	46462),ncol=2), correct = F)\
+seq_81$p_value = '0.4891'\
+setDT(seq_81)\
+\
+#2-ADM05,2-ALL04\
+#Administrative concerns and non-specific laboratory abnormalities (index) and Asthma, w/o status asthmaticus (index)\
+seq_82<- seq_counts[82,]\
+mcnemar.test(matrix(c(3,	416,	541,	48734),ncol=2), correct = F)\
+seq_82$p_value = '0.0000533'\
+setDT(seq_82)\
+\
+#2-ADM06\
+#Preventive care (index)\
+seq_83<- seq_counts[83,]\
+mcnemar.test(matrix(c(85,	1358,	1746,	46505),ncol=2), correct = F)\
+seq_83$p_value = '0.000000000003303'\
+setDT(seq_83)\
+\
+#2-ALL03\
+#Allergic rhinitis (index)\
+seq_84<- seq_counts[84,]\
+mcnemar.test(matrix(c(252,	2624,	3968,	42850),ncol=2), correct = F)\
+seq_84$p_value = '0.00000000000000022'\
+setDT(seq_84)\
+\
+#2-ALL03,2-ALL04\
+#Allergic rhinitis (index) and Asthma, w/o status asthmaticus (index)\
+seq_85 <- seq_counts[85,]\
+mcnemar.test(matrix(c(43,	978,	1957,	46716),ncol=2), correct = F)\
+seq_85$p_value = '0.00000000000000022'\
+setDT(seq_85)\
+\
+#2-ALL03,2-ALL04,3-ALL04\
+#Allergic rhinitis (index) and Asthma, w/o status asthmaticus (index); Asthma, w/o status asthmaticus (post-index)\
+seq_86 <- seq_counts[86,]\
+mcnemar.test(matrix(c(10,	493,	687,	48504),ncol=2), correct = F)\
+seq_86$p_value = '0.00000001627'\
+setDT(seq_86)\
+\
+#2-ALL03,2-NUT03\
+#Allergic rhinitis (index) and Obesity (index)\
+seq_87 <- seq_counts[87,]\
+mcnemar.test(matrix(c(0,	0,	736,	48958),ncol=2), correct = F)\
+seq_87$p_value = '0.00000000000000022'\
+setDT(seq_87)\
+\
+#2-ALL03,2-SKN02\
+#Allergic rhinitis (index) and Dermatitis and eczema (index)\
+seq_88 <- seq_counts[88,]\
+mcnemar.test(matrix(c(5,	368,	719,	48602),ncol=2), correct = F)\
+seq_88$p_value = '0.00000000000000022'\
+setDT(seq_88)\
+\
+#2-ALL03,3-ALL03\
+#Allergic rhinitis (index); Allergic rhinitis (post-index)\
+seq_89 <- seq_counts[89,]\
+mcnemar.test(matrix(c(7,	726,	723,	48238),ncol=2), correct = F)\
+seq_89$p_value = '0.9372'\
+setDT(seq_89)\
+\
+#2-ALL03,3-ALL04\
+#Allergic rhinitis (index); Asthma, w/o status asthmaticus (post-index)\
+seq_90 <- seq_counts[90,]\
+mcnemar.test(matrix(c(10,	627,	791,	48266),ncol=2), correct = F)\
+seq_90$p_value = '0.0000133'\
+setDT(seq_90)\
+\
+##Combine chi square for sequences 81-90\
+chi_set9 = rbind(seq_81, seq_82, seq_83, seq_84, seq_85, seq_86, seq_87, seq_88, seq_89, seq_90)\
+setDT(chi_set9)\
+\
+##Sequences 91-100\
+\
+#2-ALL04\
+#Asthma, w/o status asthmaticus (index)\
+seq_91<- seq_counts[91,]\
+mcnemar.test(matrix(c(679,	3602,	6215,	39198),ncol=2), correct = F)\
+seq_91$p_value = '0.00000000000000022'\
+setDT(seq_91)\
+\
+#2-ALL04 2-NUT03\
+#Asthma, w/o status asthmaticus (index) and Obesity (index)\
+seq_92<- seq_counts[92,]\
+mcnemar.test(matrix(c(0,	0,	1265,	48429),ncol=2), correct = F)\
+seq_92$p_value = '0.00000000000000022'\
+setDT(seq_92)\
+\
+#2-ALL04 2-SKN02\
+#Asthma, w/o status asthmaticus (index) and Dermatitis and eczema (index)\
+seq_93 <- seq_counts[93,]\
+mcnemar.test(matrix(c(15,	411,	892,	48376),ncol=2), correct = F)\
+seq_93$p_value = '0.00000000000000022'\
+setDT(seq_93)\
+\
+#2-ALL04 3-ALL03\
+#Asthma, w/o status asthmaticus (index); Allergic Rhinitis (post-index)\
+seq_94 <- seq_counts[94,]\
+mcnemar.test(matrix(c(10,	623,	695,	48366),ncol=2), correct = F)\
+seq_94$p_value = '0.04734'\
+setDT(seq_94)\
+\
+#2-ALL04,3-ALL03,3-ALL04\
+#Asthma, w/o status asthmaticus (index); Allergic Rhinitis (post-index) and Asthma, w/o status asthmaticus (post-index)\
+seq_95 <- seq_counts[95,]\
+mcnemar.test(matrix(c(8,	513,	571,	48602),ncol=2), correct = F)\
+seq_95$p_value = '0.07813'\
+setDT(seq_95)\
+\
+#2-ALL04,3-ALL04\
+#Asthma, w/o status asthmaticus (index); Asthma, w/o status asthmaticus (post-index)\
+seq_96 <- seq_counts[96,]\
+mcnemar.test(matrix(c(121,	1874,	2210,	45489),ncol=2), correct = F)\
+seq_96$p_value = '0.0000001459'\
+setDT(seq_96)\
+\
+#2-ALL04,3-EAR11\
+#Asthma, w/o status asthmaticus (index); Acute upper respiratory tract infection (post-index)\
+seq_97 <- seq_counts[97,]\
+mcnemar.test(matrix(c(12,	571,	620,	48491),ncol=2), correct = F)\
+seq_97$p_value = '0.1557'\
+setDT(seq_97)\
+\
+#2-CAR11\
+#Disorders of lipid metabolism (index)\
+seq_98 <- seq_counts[98,]\
+mcnemar.test(matrix(c(3,	220,	565, 48906),ncol=2), correct = F)\
+seq_98$p_value = '0.00000000000000022'\
+setDT(seq_98)\
+\
+#2-EAR01\
+#Otitis media (index)\
+seq_99 <- seq_counts[99,]\
+mcnemar.test(matrix(c(452,	4515,	2683,	42044),ncol=2), correct = F)\
+seq_99$p_value = '0.00000000000000022'\
+setDT(seq_99)\
+\
+#2-EAR01,2-EAR08\
+#Otitis media (index) and Deafness, hearing loss (index)\
+seq_100 <- seq_counts[100,]\
+mcnemar.test(matrix(c(7,	531,	516,	48640),ncol=2), correct = F)\
+seq_100$p_value = '0.643'\
+setDT(seq_100)\
+\
+##Combine chi square for sequences 91-100\
+chi_set10 = rbind(seq_91, seq_92, seq_93, seq_94, seq_95, seq_96, seq_97, seq_98, seq_99, seq_100)\
+setDT(chi_set10)\
+\
+##Combine chi square results for sequences 51-100\
+\
+full_seq2 = rbind(chi_set6, chi_set7, chi_set8, chi_set9, chi_set10)\
+setDT(full_seq2)	\
+\
+##Sequences 101-110\
+\
+#2-EAR01,3-EAR01\
+#Otitis media (index); Otitis media (post-index)\
+seq_101 <- seq_counts[101,]\
+mcnemar.test(matrix(c(86,	1954,	1305,	46349),ncol=2), correct = F)\
+seq_101$p_value = '0.00000000000000022'\
+setDT(seq_101)\
+\
+#2-EAR08\
+#Deafness, hearing loss (index)\
+seq_102 <- seq_counts[102,]\
+mcnemar.test(matrix(c(29,	1336,	1054,	47275),ncol=2), correct = F)\
+seq_102$p_value = '0.000000008006'\
+setDT(seq_102)\
+\
+#2-EAR09\
+#Chronic pharyngitis and tonsillitis (index)\
+seq_103 <- seq_counts[103,]\
+mcnemar.test(matrix(c(20,	665,	1088,	47921),ncol=2), correct = F)\
+seq_103$p_value = '0.00000000000000022'\
+setDT(seq_103)\
+\
+#2-EAR11\
+#Acute upper respiratory tract infection (index)\
+seq_104 <- seq_counts[104,]\
+mcnemar.test(matrix(c(610,	6915,	2819,	39350),ncol=2), correct = F)\
+seq_104$p_value = '0.00000000000000022'\
+setDT(seq_104)\
+\
+#2-EAR11, 3-EAR11\
+#Acute upper respiratory tract infection (index); Acute upper respiratory tract infection (post-index)\
+seq_105 <- seq_counts[105,]\
+mcnemar.test(matrix(c(36,	2251,	569,	46838),ncol=2), correct = F)\
+seq_105$p_value = '0.00000000000000022'\
+setDT(seq_105)\
+\
+#2-EAR12\
+#ENT disorders, other (index)\
+seq_106 <- seq_counts[106,]\
+mcnemar.test(matrix(c(3,	485,	528,	48678),ncol=2), correct = F)\
+seq_106$p_value = '0.1767'\
+setDT(seq_106)\
+\
+#2-END05\
+#Other endocrine disorders (index)\
+seq_107 <- seq_counts[107,]\
+mcnemar.test(matrix(c(11,	464,	971,	48248),ncol=2), correct = F)\
+seq_107$p_value = '0.00000000000000022'\
+setDT(seq_107)\
+\
+#2-EYE01\
+#Ophthalmic signs and symptoms (index)\
+seq_108 <- seq_counts[108,]\
+mcnemar.test(matrix(c(4,	412,	555,	48723),ncol=2), correct = F)\
+seq_108$p_value = '0.000004254'\
+setDT(seq_108)\
+\
+#2-EYE07\
+#Conjunctivitis, keratitis (index)\
+seq_109 <- seq_counts[109,]\
+mcnemar.test(matrix(c(11,	775,	543,	48365),ncol=2), correct = F)\
+seq_109$p_value = '0.0000000001654'\
+setDT(seq_109)\
+\
+#2-GAS01\
+#Gastrointestinal signs and symptoms (index)\
+seq_110 <- seq_counts[110,]\
+mcnemar.test(matrix(c(6,	455,	508,	48725),ncol=2), correct = F)\
+seq_110$p_value = ' 0.08765'\
+setDT(seq_110)\
+\
+##Combine chi square for sequences 101-110\
+chi_set11 = rbind(seq_101, seq_102, seq_103, seq_104, seq_105, seq_106, seq_107, seq_108, seq_109, seq_110)\
+setDT(chi_set11)\
+\
+##Sequences 111-120\
+\
+#2-GAS03\
+#Constipation (index)\
+seq_111 <- seq_counts[111,]\
+mcnemar.test(matrix(c(44,	1210,	1657,	46783),ncol=2), correct = F)\
+seq_111$p_value = '0.00000000000000022'\
+setDT(seq_111)\
+\
+#2-GAS08\
+#Gastroesophageal reflux (index)\
+seq_112 <- seq_counts[112,]\
+mcnemar.test(matrix(c(21,	757,	976,	47940),ncol=2), correct = F)\
+seq_112$p_value = '0.0000001435'\
+setDT(seq_112)\
+\
+\
+#2-GSI01\
+#Nonspecific signs and symptoms (index)\
+seq_113 <- seq_counts[113,]\
+mcnemar.test(matrix(c(19,	819,	1136,	47720),ncol=2), correct = F)\
+seq_113$p_value = '0.000000000000753'\
+setDT(seq_113)\
+\
+#2-GSU03\
+#Benign and unspecified neoplasm (index)\
+seq_114 <- seq_counts[114,]\
+mcnemar.test(matrix(c(12,	432,	487,	48763),ncol=2), correct = F)\
+seq_114$p_value = '0.06963'\
+setDT(seq_114)\
+\
+#2-GSU09\
+#Nonfungal infections of skin and subcutaneous tissue (index)\
+seq_115 <- seq_counts[115,]\
+mcnemar.test(matrix(c(6,	633,	546,	48509),ncol=2), correct = F)\
+seq_115$p_value = '0.01129'\
+setDT(seq_115)\
+\
+#2-GSU10\
+#Abdominal pain (index)\
+seq_116 <- seq_counts[116,]\
+mcnemar.test(matrix(c(27,	1257,	1010,	47400),ncol=2), correct = F)\
+seq_116$p_value = '0.000000213'\
+setDT(seq_116)\
+\
+#2-GUR06\
+#Urinary symptoms (index)\
+seq_117 <- seq_counts[117,]\
+mcnemar.test(matrix(c(31,	999,	1208,	47456),ncol=2), correct = F)\
+seq_117$p_value = '0.000008634'\
+setDT(seq_117)\
+\
+#2-INF06\
+#Viral syndromes (index)\
+seq_118 <- seq_counts[118,]\
+mcnemar.test(matrix(c(53,	1551,	787,	47303),ncol=2), correct = F)\
+seq_118$p_value = '0.00000000000000022'\
+setDT(seq_118)\
+\
+#2-MUS01\
+#Musculoskeletal signs and symptoms (index)\
+seq_119 <- seq_counts[119,]\
+mcnemar.test(matrix(c(52,	1226,	1384,	47032),ncol=2), correct = F)\
+seq_119$p_value = '0.001983'\
+setDT(seq_119)\
+\
+#2-MUS02\
+#Acute sprains and strains (index)\
+seq_120 <- seq_counts[120,]\
+mcnemar.test(matrix(c(32,	1136,	1058,	47468),ncol=2), correct = F)\
+seq_120$p_value = '0.09587'\
+setDT(seq_120)\
+\
+\
+##Combine chi square for sequences 111-120\
+chi_set12 = rbind(seq_111, seq_112, seq_113, seq_114, seq_115, seq_116, seq_117, seq_118, seq_119, seq_120)\
+setDT(chi_set12)\
+\
+##Sequences 121-130\
+\
+#2-MUS04\
+#Fractures (excluding digits) (index)\
+seq_121 <- seq_counts[121,]\
+mcnemar.test(matrix(c(82,	1514,	1713,	46385),ncol=2), correct = F)\
+seq_121$p_value = '0.0004599'\
+setDT(seq_121)\
+\
+\
+#2-MUS04 3-MUS04\
+#Fractures (excluding digits) (index); Fractures (excluding digits) (post-index)\
+seq_122 <- seq_counts[122,]\
+mcnemar.test(matrix(c(21,	939,	764,	47970),ncol=2), correct = F)\
+seq_122$p_value = '0.00002229'\
+setDT(seq_122)\
+\
+#2-MUS15\
+#Bursitis, synovitis, tenosynovitis (index)\
+seq_123 <- seq_counts[123,]\
+mcnemar.test(matrix(c(4,	358,	520,	48812),ncol=2), correct = F)\
+seq_123$p_value = '0.00000004571'\
+setDT(seq_123)\
+\
+#2-MUS17\
+#Musculoskeletal disorders, other (index)\
+seq_124 <- seq_counts[124,]\
+mcnemar.test(matrix(c(37,	1042,	1181,	47434),ncol=2), correct = F)\
+seq_124$p_value = '0.003197'\
+setDT(seq_124)\
+\
+#2-NUR01\
+#Neurologic signs and symptoms (index)\
+seq_125 <- seq_counts[125,]\
+mcnemar.test(matrix(c(13,	675,	974,	48032),ncol=2), correct = F)\
+seq_125$p_value = '0.0000000000001797'\
+setDT(seq_125)\
+\
+#2-NUR02\
+#Headaches (index)\
+seq_126 <- seq_counts[126,]\
+mcnemar.test(matrix(c(30,	681,	888,	48095),ncol=2), correct = F)\
+seq_126$p_value = '0.0000001733'\
+setDT(seq_126)\
+\
+#2-NUR07\
+#Seizure disorder (index)\
+seq_127 <- seq_counts[127,]\
+mcnemar.test(matrix(c(16,	627,	1076,	47975),ncol=2), correct = F)\
+seq_127$p_value = '0.00000000000000022'\
+setDT(seq_127)\
+\
+#2-NUR10\
+#Sleep problems (index)\
+seq_128 <- seq_counts[128,]\
+mcnemar.test(matrix(c(9,	388,	812,	48485),ncol=2), correct = F)\
+seq_128$p_value = '0.00000000000000022'\
+setDT(seq_128)\
+\
+#2-NUR19\
+#Developmental disorder (index)\
+seq_129 <- seq_counts[129,]\
+mcnemar.test(matrix(c(98,	1411,	2193,	45992),ncol=2), correct = F)\
+seq_129$p_value = '0.00000000000000022'\
+setDT(seq_129)\
+\
+#2-NUR19, 3-NUR19\
+#Developmental disorder (index); Developmental disorder (post-index) \
+seq_130 <- seq_counts[130,]\
+mcnemar.test(matrix(c(8,	623,	552,	48511),ncol=2), correct = F)\
+seq_130$p_value = '0.03833'\
+setDT(seq_130)\
+\
+##Combine chi square for sequences 121-130\
+chi_set13 = rbind(seq_121, seq_122, seq_123, seq_124, seq_125, seq_126, seq_127, seq_128, seq_129, seq_130)\
+setDT(chi_set13)\
+\
+##Sequences 131-140\
+#2-NUR22\
+#Migraines (index)\
+seq_131 <- seq_counts[131,]\
+mcnemar.test(matrix(c(10,	362,	559,	487631),ncol=2), correct = F)\
+seq_131$p_value = '0.00000000008506'\
+setDT(seq_131)\
+\
+\
+#2-NUR26\
+#Autism Spectrum Disorder (index)\
+seq_132 <- seq_counts[132,]\
+mcnemar.test(matrix(c(17,	419,	1035,	48223),ncol=2), correct = F)\
+seq_132$p_value = '0.00000000000000022'\
+setDT(seq_132)\
+\
+#2-NUT03\
+#Obesity (index)\
+seq_133 <- seq_counts[133,]\
+mcnemar.test(matrix(c(2,	8,	7117,	42567),ncol=2), correct = F)\
+seq_133$p_value = '0.00000000000000022'\
+setDT(seq_133)\
+\
+#2-NUT03,2-SKN02\
+#Obesity (index) and Dermatitis and eczema (index)\
+seq_134 <- seq_counts[134,]\
+mcnemar.test(matrix(c(0,	0,	506,	49188),ncol=2), correct = F)\
+seq_134$p_value = '0.00000000000000022'\
+setDT(seq_134)\
+\
+#2-NUT03,3-ALL04\
+#Obesity (index); Asthma, w/o status asthmaticus (post-index)\
+seq_135 <- seq_counts[135,]\
+mcnemar.test(matrix(c(0,	2,	500,	49192),ncol=2), correct = F)\
+seq_135$p_value = '0.00000000000000022'\
+setDT(seq_135)\
+\
+#2-NUT03,3-EAR11\
+#Obesity (index); Acute upper respiratory tract infections (post-index)\
+seq_136 <- seq_counts[136,]\
+mcnemar.test(matrix(c(0,	2,	672,	49020),ncol=2), correct = F)\
+seq_136$p_value = '0.00000000000000022'\
+setDT(seq_136)\
+\
+#2-NUT03,3-NUT03	\
+#Obesity (index); Obesity (post-index)\
+seq_137 <- seq_counts[137,]\
+mcnemar.test(matrix(c(0,	2,	1595,	48097),ncol=2), correct = F)\
+seq_137$p_value = '0.00000000000000022'\
+setDT(seq_137)\
+\
+#2-PSY01\
+#Anxiety, neuroses (index)\
+seq_138 <- seq_counts[138,]\
+mcnemar.test(matrix(c(5,	454,	511,	48724),ncol=2), correct = F)\
+seq_138$p_value = ' 0.06652'\
+setDT(seq_138)\
+\
+#2-PSY05\
+#Attention deficit disorder (index)\
+seq_139 <- seq_counts[139,]\
+mcnemar.test(matrix(c(72,	1266,	1305,	47051),ncol=2), correct = F)\
+seq_139$p_value = '0.4418'\
+setDT(seq_139)\
+\
+#2-PSY10\
+#Psychologic signs and symptoms (index)\
+seq_140 <- seq_counts[140,]\
+mcnemar.test(matrix(c(1,	405,	677,	48611),ncol=2), correct = F)\
+seq_140$p_value = '0.00000000000000022'\
+setDT(seq_140)\
+\
+\
+##Combine chi square for sequences 131-140\
+chi_set14 = rbind(seq_131, seq_132, seq_133, seq_134, seq_135, seq_136, seq_137, seq_138, seq_139, seq_140)\
+setDT(chi_set14)\
+\
+##Sequences 141-150\
+\
+#2-PSY14\
+#Psychological disorders of childhood (index)\
+seq_141 <- seq_counts[141,]\
+mcnemar.test(matrix(c(6,	327,	587,	48774),ncol=2), correct = F)\
+seq_141$p_value = '0.00000000000000022'\
+setDT(seq_141)\
+\
+#2-RES01\
+#Respiratory signs and symptoms (index)\
+seq_142 <- seq_counts[142,]\
+mcnemar.test(matrix(c(45,	1089,	1320,	47240),ncol=2), correct = F)\
+seq_142$p_value = '0.000002521'\
+setDT(seq_142)\
+\
+#2-RES05\
+#Cough (index)\
+seq_143 <- seq_counts[143,]\
+mcnemar.test(matrix(c(27,	1316,	864,	47487),ncol=2), correct = F)\
+seq_143$p_value = '0.00000000000000022'\
+setDT(seq_143)\
+\
+#2-RES06\
+#Sleep Apnea (index)\
+seq_144 <- seq_counts[144,]\
+mcnemar.test(matrix(c(1,	310,	734,	48649),ncol=2), correct = F)\
+seq_144$p_value = '0.00000000000000022'\
+setDT(seq_144)\
+\
+#2-RES07\
+#Sinusitis (index)\
+seq_145 <- seq_counts[145,]\
+mcnemar.test(matrix(c(24,	1238,	569,	47863),ncol=2), correct = F)\
+seq_145$p_value = '0.00000000000000022'\
+setDT(seq_145)\
+\
+#2-SKN01\
+#Contusions and abrasions (index)\
+seq_146 <- seq_counts[146,]\
+mcnemar.test(matrix(c(11,	877,	644,	48162),ncol=2), correct = F)\
+seq_146$p_value = '0.00000000231'\
+setDT(seq_146)\
+\
+#2-SKN02\
+#Dermatitis and eczema (index)\
+seq_147 <- seq_counts[147,]\
+mcnemar.test(matrix(c(201,	2270,	3215,	44008),ncol=2), correct = F)\
+seq_147$p_value = '0.00000000000000022'\
+setDT(seq_147)\
+\
+#2-SKN02,3-SKN02\
+#Dermatitis and eczema (index); Dermatitis and eczema (post-index)\
+seq_148 <- seq_counts[148,]\
+mcnemar.test(matrix(c(7,	655,	649,	48383),ncol=2), correct = F)\
+seq_148$p_value = '0.868'\
+setDT(seq_148)\
+\
+#2-SKN04\
+#Acne (index)\
+seq_149 <- seq_counts[149,]\
+mcnemar.test(matrix(c(33,	490,	889,	48282),ncol=2), correct = F)\
+seq_149$p_value = '0.00000000000000022'\
+setDT(seq_149)\
+\
+#2-SKN07\
+#Viral warts and molluscum contagiosum (index)\
+seq_150 <- seq_counts[150,]\
+mcnemar.test(matrix(c(8,	580,	507,	48599),ncol=2), correct = F)\
+seq_150$p_value = '0.02682'\
+setDT(seq_150)\
+\
+\
+##Combine chi square for sequences 141-150\
+chi_set15 = rbind(seq_141, seq_142, seq_143, seq_144, seq_145, seq_146, seq_147, seq_148, seq_149, seq_150)\
+setDT(chi_set15)\
+\
+##Sequences 151-160\
+\
+#2-SKN11\
+#Dermatophytoses (index)\
+seq_151 <- seq_counts[151,]\
+mcnemar.test(matrix(c(7,	478,	492,	48717),ncol=2), correct = F)\
+seq_151$p_value = '0.6531'\
+setDT(seq_151)\
+\
+#2-SKN17\
+#Other skin disorders (index)\
+seq_152 <- seq_counts[152,]\
+mcnemar.test(matrix(c(11,	477,	1171,	48035),ncol=2), correct = F)\
+seq_152$p_value = '0.00000000000000022'\
+setDT(seq_152)\
+\
+#3-ADM05\
+#Administrative concerns and non-specific laboratory abnormalities (post-index)\
+seq_153 <- seq_counts[153,]\
+mcnemar.test(matrix(c(39,	1351,	1256,	47048),ncol=2), correct = F)\
+seq_153$p_value = '0.0628'\
+setDT(seq_153)\
+\
+#3-ADM06\
+#Preventive care (post-index)\
+seq_154 <- seq_counts[154,]\
+mcnemar.test(matrix(c(25,	1142,	957,	47570),ncol=2), correct = F)\
+seq_154$p_value = '0.0000539'\
+setDT(seq_154)\
+\
+#3-ALL03\
+#Allergic rhinitis (post-index)\
+seq_155 <- seq_counts[155,]\
+mcnemar.test(matrix(c(111,	2546,	2039,	44998),ncol=2), correct = F)\
+seq_155$p_value = '0.00000000000007018'\
+setDT(seq_155)\
+\
+#3-ALL03, 3-ALL04\
+#Allergic rhinitis (post-index) and Asthma, w/o status asthmaticus (post-index)\
+seq_156 <- seq_counts[156,]\
+mcnemar.test(matrix(c(20,	961,	909,	47804),ncol=2), correct = F)\
+seq_156$p_value = '0.2292'\
+setDT(seq_156)\
+\
+#3-ALL04\
+#Asthma, w/o status asthmaticus (post-index)\
+seq_157 <- seq_counts[157,]\
+mcnemar.test(matrix(c(401,	3618,	3558,	42117),ncol=2), correct = F)\
+seq_157$p_value = '0.4788'\
+setDT(seq_157)\
+\
+#3-EAR01\
+#Otitis media (post-index)\
+seq_158 <- seq_counts[158,]\
+mcnemar.test(matrix(c(462,	4143,	2734,	42355),ncol=2), correct = F)\
+seq_158$p_value = '0.00000000000000022'\
+setDT(seq_158)\
+\
+#3-EAR08\
+#Deafness, hearing loss (post-index)\
+seq_159 <- seq_counts[159,]\
+mcnemar.test(matrix(c(36,	1156,	1064,	47438),ncol=2), correct = F)\
+seq_159$p_value = '0.05087'\
+setDT(seq_159)\
+\
+#3-EAR09\
+#Chronic pharyngitis and tonsillitis (post-index)\
+seq_160 <- seq_counts[160,]\
+mcnemar.test(matrix(c(4,	477,	901,	48312),ncol=2), correct = F)\
+seq_160$p_value = '0.00000000000000022'\
+setDT(seq_160)\
+\
+##Combine chi square for sequences 151-160\
+chi_set16 = rbind(seq_151, seq_152, seq_153, seq_154, seq_155, seq_156, seq_157, seq_158, seq_159, seq_160)\
+setDT(chi_set16)\
+\
+##Sequences 161-170\
+\
+#3-EAR11\
+#Acute upper respiratory tract infection(post-index)\
+seq_161 <- seq_counts[161,]\
+mcnemar.test(matrix(c(594,	6421,	3229,	39450),ncol=2), correct = F)\
+seq_161$p_value = '0.00000000000000022'\
+setDT(seq_161)\
+\
+#3-END05\
+#Other endocrine disorders (post-index)\
+seq_162 <- seq_counts[162,]\
+mcnemar.test(matrix(c(8,	441,	493,	48752),ncol=2), correct = F)\
+seq_162$p_value = '0.08885'\
+setDT(seq_162)\
+\
+#3-GAS03\
+#Constipation (post-index)\
+seq_163 <- seq_counts[163,]\
+mcnemar.test(matrix(c(25,	1048,	981, 47640),ncol=2), correct = F)\
+seq_163$p_value = '0.1369'\
+setDT(seq_163)\
+\
+#3-GAS08\
+#Gastroesophageal reflux (post-index)\
+seq_164 <- seq_counts[164,]\
+mcnemar.test(matrix(c(14,	651,	626, 48403),ncol=2), correct = F)\
+seq_164$p_value = '0.4842'\
+setDT(seq_164)\
+\
+#3-GSI01\
+#Nonspecific signs and symptoms (post-index)\
+seq_165 <- seq_counts[165,]\
+mcnemar.test(matrix(c(416,	725,	661,	48292),ncol=2), correct = F)\
+seq_165$p_value = '0.0856'\
+setDT(seq_165)\
+\
+#3-GSI03\
+#Fever (post-index)\
+seq_166 <- seq_counts[166,]\
+mcnemar.test(matrix(c(14,	847,	543, 48290),ncol=2), correct = F)\
+seq_166$p_value = '0.0000000000000003523'\
+setDT(seq_166)\
+\
+#3-GSU09\
+#Nonfungal infections of skin and subcutaneous tissue (post-index)\
+seq_167 <- seq_counts[167,]\
+mcnemar.test(matrix(c(9,	559,	519,	48607),ncol=2), correct = F)\
+seq_167$p_value = '0.2231'\
+setDT(seq_167)\
+\
+#3-GSU010\
+#Abdominal pain (post-index)\
+seq_168 <- seq_counts[168,]\
+mcnemar.test(matrix(c(19,	1089,	690,	47896),ncol=2), correct = F)\
+seq_168$p_value = '0.00000000000000022'\
+setDT(seq_168)\
+\
+#3-GUR06\
+#Urinary symptoms (post-index)\
+seq_169 <- seq_counts[169,]\
+mcnemar.test(matrix(c(18,	932,	760,	47984),ncol=2), correct = F)\
+seq_169$p_value = '0.00002896'\
+setDT(seq_169)\
+\
+#3-INF06\
+#Viral syndromes (post-index)\
+seq_170 <- seq_counts[170,]\
+mcnemar.test(matrix(c(42,	1504,	979,	47169),ncol=2), correct = F)\
+seq_170$p_value = '0.00000000000000022'\
+setDT(seq_170)\
+\
+##Combine chi square for sequences 161-170\
+chi_set17 = rbind(seq_161, seq_162, seq_163, seq_164, seq_165, seq_166, seq_167, seq_168, seq_169, seq_170)\
+setDT(chi_set17)\
+\
+##Sequences 171-180\
+\
+#3-MUS01\
+#Musculoskeletal signs and symptoms (post-index)\
+seq_171 <- seq_counts[171,]\
+mcnemar.test(matrix(c(30,	1087,	891, 47686),ncol=2), correct = F)\
+seq_171$p_value = '0.00001048'\
+setDT(seq_171)\
+\
+\
+#3-MUS02\
+#Acute sprains and strains (post-index)\
+seq_172 <- seq_counts[172,]\
+mcnemar.test(matrix(c(29,	1011,	815,	47839),ncol=2), correct = F)\
+seq_172$p_value = '0.000004502'\
+setDT(seq_172)\
+\
+#3-MUS04\
+#Fractures (excluding digits) (post-index)\
+seq_173 <- seq_counts[173,]\
+mcnemar.test(matrix(c(39,	1255,	1080,	47320),ncol=2), correct = F)\
+seq_173$p_value = ' 0.0002928'\
+setDT(seq_173)\
+\
+#3-MUS17\
+#Musculoskeletal disorders, other (post-index)\
+seq_174 <- seq_counts[174,]\
+mcnemar.test(matrix(c(11,	902,	692,	48089),ncol=2), correct = F)\
+seq_174$p_value = '0.0000001442'\
+setDT(seq_174)\
+\
+#3-NUR01\
+#Neurologic signs and symptoms (post-index)\
+seq_175 <- seq_counts[175,]\
+mcnemar.test(matrix(c(8,	590,	522,	48574),ncol=2), correct = F)\
+seq_175$p_value = ' 0.04143'\
+setDT(seq_175)\
+\
+#3-NUR02\
+#Headaches (post-index)\
+seq_176 <- seq_counts[176,]\
+mcnemar.test(matrix(c(14,	621,	627,	48432),ncol=2), correct = F)\
+seq_176$p_value = '0.8651'\
+setDT(seq_176)\
+\
+\
+#3-NUR07\
+#Seizure disorder (post-index)\
+seq_177 <- seq_counts[177,]\
+mcnemar.test(matrix(c(8,	549,	658,	48479),ncol=2), correct = F)\
+seq_177$p_value = '0.001704'\
+setDT(seq_177)\
+\
+\
+#3-NUR10\
+#Sleep problems (post-index)\
+seq_178 <- seq_counts[178,]\
+mcnemar.test(matrix(c(2,	295,	541,	48856),ncol=2), correct = F)\
+seq_178$p_value = '0.00000000000000022'\
+setDT(seq_178)\
+\
+\
+#3-NUR19\
+#Developmental disorder (post-index)\
+seq_179 <- seq_counts[179,]\
+mcnemar.test(matrix(c(44,	1221,	1323,	47106),ncol=2), correct = F)\
+seq_179$p_value = '0.04315'\
+setDT(seq_179)\
+\
+#3-NUR26	\
+#Autism Spectrum Disorder (post-index)\
+seq_180 <- seq_counts[180,]\
+mcnemar.test(matrix(c(4,	402,	641,	48647),ncol=2), correct = F)\
+seq_180$p_value = '0.0000000000001358'\
+setDT(seq_180)\
+#						\
+\
+##Combine chi square for sequences 171-180\
+chi_set18 = rbind(seq_171, seq_172, seq_173, seq_174, seq_175, seq_176, seq_177, seq_178, seq_179, seq_180)\
+setDT(chi_set18)\
+\
+##Sequences 181-189\
+\
+#3-NUT03	\
+#Obesity (post-index)\
+seq_181 <- seq_counts[181,]\
+mcnemar.test(matrix(c(0,	7,	3006,	46681),ncol=2), correct = F)\
+seq_181$p_value = '0.00000000000000022'\
+setDT(seq_181)\
+\
+\
+#3-PSY05	\
+#Attention deficit disorder (post-index)\
+seq_182 <- seq_counts[182,]\
+mcnemar.test(matrix(c(42,	1247,	802,	47603),ncol=2), correct = F)\
+seq_182$p_value = '0.00000000000000022'\
+setDT(seq_182)\
+\
+\
+#3-RES01	\
+#Respiratory signs and symptoms (post-index)\
+seq_183 <- seq_counts[183,]\
+mcnemar.test(matrix(c(28,	985,	948,	47733),ncol=2), correct = F)\
+seq_183$p_value = '0.4'\
+setDT(seq_183)\
+\
+\
+#3-RES05	\
+#Cough (post-index)\
+seq_184 <- seq_counts[184,]\
+mcnemar.test(matrix(c(21,	1240,	804,	47629),ncol=2), correct = F)\
+seq_184$p_value = '0.00000000000000022'\
+setDT(seq_184)\
+\
+#3-RES06	\
+#Sleep apnea (post-index)\
+seq_185 <- seq_counts[185,]\
+mcnemar.test(matrix(c(1,	239,	557,	48897),ncol=2), correct = F)\
+seq_185$p_value = '0.00000000000000022'\
+setDT(seq_185)\
+\
+\
+#3-RES07	\
+#Sinusitis (post-index)\
+seq_186 <- seq_counts[186,]\
+mcnemar.test(matrix(c(17,	1231,	634, 47812),ncol=2), correct = F)\
+seq_186$p_value = '0.00000000000000022'\
+setDT(seq_186)\
+\
+#3-SKN01	\
+#Contusions and abrasions (post-index)\
+seq_187 <- seq_counts[187,]\
+mcnemar.test(matrix(c(9,	717,	663,	48305),ncol=2), correct = F)\
+seq_187$p_value = '0.146'\
+setDT(seq_187)\
+\
+\
+#3-SKN02	\
+#Dermatitis and eczema (post-index)\
+seq_188 <- seq_counts[188,]\
+mcnemar.test(matrix(c(75,	2123,	1779,	45717),ncol=2), correct = F)\
+seq_188$p_value = '0.0000000365'\
+setDT(seq_188)\
+\
+\
+#3-SKN17	\
+#Other skin disorders (post-index)\
+seq_189 <- seq_counts[189,]\
+mcnemar.test(matrix(c(3,	365,	605,	48721),ncol=2), correct = F)\
+seq_189$p_value = '0.00000000000001299'\
+setDT(seq_189)\
+\
+##Combine McNemars for sequences 181-189\
+chi_set19 = rbind(seq_181, seq_182, seq_183, seq_184, seq_185, seq_186, seq_187, seq_188, seq_189)\
+setDT(chi_set19)\
+\
+##Combine McNemars results for sequences 101-189\
+\
+full_seq3 = rbind(chi_set11, chi_set12, chi_set13, chi_set14, chi_set15, chi_set16, chi_set17, chi_set18, chi_set19)\
+setDT(full_seq3)	\
+\
+##Combine McNemars results from all sequences\
+\
+full_set_mcn= rbind(full_seq1, full_seq2, full_seq3)\
+setDT(full_set_mcn)\
+\
+##Write results to a CSV\
+write.csv(full_set_mcn, "full_set_mcn.csv")\
+\
+##explore sequences\
+sig_mcn <- subset(full_set_mcn, p_value < 0.05, \
+                  select=c(Sequence, c1, c2, c3, c4, p_value))\
+\
+setDT(sig_mcn)\
+\
+insig_mcn <- subset(full_set_mcn, p_value>=0.05, \
+                    select=c(Sequence, c1, c2, c3, c4, p_value))\
+\
+setDT(insig_mcn)\
+\
+sig_mcn_case <- subset(sig_mcn, c2 > c3, \
+                       select=c(Sequence, c1, c2, c3, c4, p_value))\
+\
+setDT(sig_mcn_case)\
+\
+sig_mcn_control <- subset(sig_mcn, c2 < c3, \
+                          select=c(Sequence, c1, c2, c3, c4, p_value))\
+\
+\
+setDT(sig_mcn_control)\
+\
+insig_mcn_case <- subset(insig_mcn, c2 > c3, \
+                         select=c(Sequence, c1, c2, c3, c4, p_value))\
+\
+setDT(insig_mcn_case)\
+\
+insig_mcn_control <- subset(insig_mcn, c2 < c3, \
+                            select=c(Sequence, c1, c2, c3, c4, p_value))\
+\
+\
+setDT(insig_mcn_control)\
+\
+\
+write.csv(insig_mcn_case, "case_insig.csv")\
+write.csv(sig_mcn_case, "case_sig.csv")\
+write.csv(sig_mcn_control, "control_sig.csv")\
+write.csv(insig_mcn_control, "control_insig.csv")\
+\
+\
+\
+}
